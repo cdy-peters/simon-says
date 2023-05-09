@@ -50,29 +50,24 @@ uint8_t perform_sequence(uint16_t len)
         uint8_t step = generate_step(&state);
         printf("step: %d ", step);
 
-        uint8_t button;
-
-        while (1)
+        int8_t button = -1;
+        while (button == -1)
         {
             if (!(VPORTA.IN & PIN4_bm))
             {
                 button = 0;
-                break;
             }
             else if (!(VPORTA.IN & PIN5_bm))
             {
                 button = 1;
-                break;
             }
             else if (!(VPORTA.IN & PIN6_bm))
             {
                 button = 2;
-                break;
             }
             else if (!(VPORTA.IN & PIN7_bm))
             {
                 button = 3;
-                break;
             }
         }
 
