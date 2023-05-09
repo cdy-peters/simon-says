@@ -2,18 +2,23 @@
 #include <stdint.h>
 #include <avr/io.h>
 
-#include "qutyio.h"
+#include "qutyserial.h"
 #include "sequence.h"
+#include "display.h"
 
 // Constants
 #define MAX_SEQUENCE_LEN 10 // ! Change to 2^16 - 1 for final
 
-int main(void)
+void main(void)
 {
+
     serial_init();
 
     uint16_t sequence_len = 1;
     uint8_t valid = 1;
+
+    spi_init();      // Initialise SPI
+    spi_write(0xFF); // Clear display
 
     while (valid)
     {
@@ -28,5 +33,6 @@ int main(void)
     }
     printf("Sequence length: %d\n", sequence_len);
 
-    return 0;
+    while (1)
+        ;
 }

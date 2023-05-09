@@ -1,7 +1,14 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <util/delay.h>
+
+#include "display.h"
 
 #define STUDENT_NUMBER 0x12345678 // ! Change to actual student number for final
+#define DURATION 1000             // Duration in ms // TODO: Change to read potentiometer value
+
+volatile uint8_t segs[] = {
+    0xBE, 0xEB, 0x3E, 0x6B};
 
 uint8_t generate_step(uint32_t *state)
 {
@@ -20,8 +27,15 @@ void display_sequence(uint16_t len)
     for (uint16_t i = 0; i < len; i++)
     {
         uint8_t step = generate_step(&state);
-        // Show step on display
+
+        spi_write(segs[step]); // Show step on display
         // Play sound
+        _delay_ms(DURATION / 2);
+
+        spi_write(0xFF); // Clear display
+        // Stop sound
+        _delay_ms(DURATION / 2);
+
         printf("%d ", step);
     }
     printf("\n");
