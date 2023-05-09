@@ -20,6 +20,11 @@ void main(void)
     spi_init();      // Initialise SPI
     spi_write(0xFF); // Clear display
 
+    PORTA.PIN4CTRL = PORT_PULLUPEN_bm;
+    PORTA.PIN5CTRL = PORT_PULLUPEN_bm;
+    PORTA.PIN6CTRL = PORT_PULLUPEN_bm;
+    PORTA.PIN7CTRL = PORT_PULLUPEN_bm;
+
     while (valid)
     {
         if (sequence_len == (uint32_t)MAX_SEQUENCE_LEN)

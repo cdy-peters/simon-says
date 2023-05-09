@@ -1,3 +1,4 @@
+#include <avr/io.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <util/delay.h>
@@ -47,8 +48,45 @@ uint8_t perform_sequence(uint16_t len)
     for (uint16_t i = 0; i < len; i++)
     {
         uint8_t step = generate_step(&state);
-        // Wait for corresponding button press, return false if incorrect
-        printf("%d ", step);
+        printf("step: %d ", step);
+
+        uint8_t button;
+
+        while (1)
+        {
+            if (!(VPORTA.IN & PIN4_bm))
+            {
+                button = 0;
+                break;
+            }
+            else if (!(VPORTA.IN & PIN5_bm))
+            {
+                button = 1;
+                break;
+            }
+            else if (!(VPORTA.IN & PIN6_bm))
+            {
+                button = 2;
+                break;
+            }
+            else if (!(VPORTA.IN & PIN7_bm))
+            {
+                button = 3;
+                break;
+            }
+        }
+
+        printf("%d\n", button);
+
+        spi_write(segs[button]); // Show step on display
+        // Play sound
+        _delay_ms(DURATION); // TODO: Either duration or length of button press
+
+        spi_write(0xFF); // Clear display
+        // Stop sound
+
+        if (step != button)
+            return 0;
     }
     printf("\n");
     return 1;
