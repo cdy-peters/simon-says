@@ -5,8 +5,9 @@
 
 #include "display.h"
 
+#define __DELAY_BACKWARD_COMPATIBLE__
+
 #define STUDENT_NUMBER 0x12345678 // ! Change to actual student number for final
-#define DURATION 1000             // Duration in ms // TODO: Change to read potentiometer value
 
 volatile uint8_t segs[] = {
     0xBE, 0xEB, 0x3E, 0x6B};
@@ -22,20 +23,37 @@ uint8_t generate_step(uint32_t *state)
     return *state & 0b11;
 }
 
+void delay_ms(uint16_t ms)
+{
+    printf("Delaying for %d ms\n", ms);
+    for (uint16_t i = 0; i < ms; i++)
+        _delay_ms(1);
+}
+
+uint16_t get_duration()
+{
+    uint16_t result = ADC0.RESULT;
+
+    uint16_t duration = result / 255.0 * 1750 + 250;
+
+    return duration;
+}
+
 void display_sequence(uint16_t len)
 {
     uint32_t state = STUDENT_NUMBER;
     for (uint16_t i = 0; i < len; i++)
     {
         uint8_t step = generate_step(&state);
+        uint16_t duration = get_duration();
 
         spi_write(segs[step]); // Show step on display
         // Play sound
-        _delay_ms(DURATION / 2);
+        delay_ms(duration / 2);
 
         spi_write(0xFF); // Clear display
         // Stop sound
-        _delay_ms(DURATION / 2);
+        delay_ms(duration / 2);
 
         printf("%d ", step);
     }
@@ -75,7 +93,7 @@ uint8_t perform_sequence(uint16_t len)
 
         spi_write(segs[button]); // Show step on display
         // Play sound
-        _delay_ms(DURATION); // TODO: Either duration or length of button press
+        delay_ms(get_duration()); // TODO: Either duration or length of button press
 
         spi_write(0xFF); // Clear display
         // Stop sound
