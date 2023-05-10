@@ -5,12 +5,23 @@
 
 #include "display.h"
 
-#define __DELAY_BACKWARD_COMPATIBLE__
-
 #define STUDENT_NUMBER 0x12345678 // ! Change to actual student number for final
 
 volatile uint8_t segs[] = {
     0xBE, 0xEB, 0x3E, 0x6B};
+
+void delay_ms(uint16_t ms)
+{
+    for (uint16_t i = 0; i < ms; i++)
+        _delay_ms(1);
+}
+
+uint16_t get_duration()
+{
+    uint16_t result = ADC0.RESULT;
+    uint16_t duration = result / 255.0 * 1750 + 250;
+    return duration;
+}
 
 uint8_t generate_step(uint32_t *state)
 {
@@ -21,22 +32,6 @@ uint8_t generate_step(uint32_t *state)
         *state ^= 0xE2023CAB;
 
     return *state & 0b11;
-}
-
-void delay_ms(uint16_t ms)
-{
-    printf("Delaying for %d ms\n", ms);
-    for (uint16_t i = 0; i < ms; i++)
-        _delay_ms(1);
-}
-
-uint16_t get_duration()
-{
-    uint16_t result = ADC0.RESULT;
-
-    uint16_t duration = result / 255.0 * 1750 + 250;
-
-    return duration;
 }
 
 void display_sequence(uint16_t len)
