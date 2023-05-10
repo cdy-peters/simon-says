@@ -33,6 +33,7 @@ int main(void)
         else
         {
             printf("Sequence success\n");
+            sequence_len++;
         }
 
         if (sequence_len == (uint32_t)MAX_SEQUENCE_LEN)
@@ -40,11 +41,7 @@ int main(void)
             printf("Sequence length limit reached\n");
             sequence_len = 1;
         }
-
-        sequence_len++;
     }
-    printf("Sequence length: %d\n", sequence_len);
-    return 0;
 }
 
 void adc_init()

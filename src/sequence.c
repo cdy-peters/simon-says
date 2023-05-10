@@ -5,10 +5,11 @@
 
 #include "display.h"
 
-#define STUDENT_NUMBER 0x12345678 // ! Change to actual student number for final
+uint32_t student_number = 0x12345678; // ! Change to actual student number for final
 
 volatile uint8_t segs[] = {
     0xBE, 0xEB, 0x3E, 0x6B};
+uint8_t pins[] = {PIN4_bm, PIN5_bm, PIN6_bm, PIN7_bm};
 
 void delay_ms(uint16_t ms)
 {
@@ -36,7 +37,7 @@ uint8_t generate_step(uint32_t *state)
 
 void display_sequence(uint16_t len)
 {
-    uint32_t state = STUDENT_NUMBER;
+    uint32_t state = student_number;
     for (uint16_t i = 0; i < len; i++)
     {
         uint8_t step = generate_step(&state);
@@ -57,7 +58,7 @@ void display_sequence(uint16_t len)
 
 uint8_t perform_sequence(uint16_t len)
 {
-    uint32_t state = STUDENT_NUMBER;
+    uint32_t state = student_number;
     for (uint16_t i = 0; i < len; i++)
     {
         uint8_t step = generate_step(&state);
@@ -66,23 +67,18 @@ uint8_t perform_sequence(uint16_t len)
         int8_t button = -1;
         while (button == -1)
         {
-            if (!(VPORTA.IN & PIN4_bm))
+            for (uint8_t i = 0; i < 4; i++)
             {
-                button = 0;
-            }
-            else if (!(VPORTA.IN & PIN5_bm))
-            {
-                button = 1;
-            }
-            else if (!(VPORTA.IN & PIN6_bm))
-            {
-                button = 2;
-            }
-            else if (!(VPORTA.IN & PIN7_bm))
-            {
-                button = 3;
+                if (!(VPORTA.IN & pins[i]))
+                {
+                    button = i;
+                    break;
+                }
             }
         }
+
+        while (!(VPORTA.IN & pins[button]))
+            ;
 
         printf("%d\n", button);
 
@@ -94,7 +90,10 @@ uint8_t perform_sequence(uint16_t len)
         // Stop sound
 
         if (step != button)
+        {
+            student_number = state;
             return 0;
+        }
     }
     printf("\n");
     return 1;
