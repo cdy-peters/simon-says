@@ -4,10 +4,11 @@
 #include <util/delay.h>
 
 #include "display.h"
+#include "timer.h"
 
 uint32_t student_number = 0x12345678; // ! Change to actual student number for final
 
-volatile uint8_t segs[] = {
+volatile uint8_t btn_segs[] = {
     0xBE, 0xEB, 0x3E, 0x6B};
 uint8_t pins[] = {PIN4_bm, PIN5_bm, PIN6_bm, PIN7_bm};
 
@@ -43,7 +44,7 @@ void display_sequence(uint16_t len)
         uint8_t step = generate_step(&state);
         uint16_t duration = get_duration();
 
-        spi_write(segs[step]); // Show step on display
+        spi_write(btn_segs[step]); // Show step on display
         // Play sound
         delay_ms(duration / 2);
 
@@ -82,7 +83,7 @@ uint8_t perform_sequence(uint16_t len)
 
         printf("%d\n", button);
 
-        spi_write(segs[button]); // Show step on display
+        spi_write(btn_segs[button]); // Show step on display
         // Play sound
         delay_ms(get_duration()); // TODO: Either duration or length of button press
 
@@ -97,4 +98,26 @@ uint8_t perform_sequence(uint16_t len)
     }
     printf("\n");
     return 1;
+}
+
+void success_pattern(uint16_t len)
+{
+    set_digits(8, 8);
+    TCB0.CTRLA = TCB_ENABLE_bm; // Enable timer
+    delay_ms(get_duration());
+
+    // TODO: Display len on display
+
+    TCB0.CTRLA = 0; // Disable timer
+}
+
+void fail_pattern(uint16_t len)
+{
+    set_digits(10, 10);
+    TCB0.CTRLA = TCB_ENABLE_bm; // Enable timer
+    delay_ms(get_duration());
+
+    // TODO: Display len on display
+
+    TCB0.CTRLA = 0; // Disable timer
 }

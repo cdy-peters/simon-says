@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <avr/io.h>
+#include <util/delay.h>
 
 #include "qutyserial.h"
 #include "sequence.h"
 #include "display.h"
+#include "timer.h"
 
 #define MAX_SEQUENCE_LEN 65535
 
@@ -18,9 +20,10 @@ int main(void)
     serial_init();
     adc_init();
     pins_init();
-    spi_init(); // Initialise SPI
+    spi_init();
+    timer_init();
 
-    spi_write(0xFF); // Clear display
+    spi_write(0xFF);
 
     while (1)
     {
@@ -28,11 +31,13 @@ int main(void)
         if (!perform_sequence(sequence_len))
         {
             printf("Sequence failed\n");
+            fail_pattern(sequence_len);
             sequence_len = 1;
         }
         else
         {
             printf("Sequence success\n");
+            success_pattern(sequence_len);
             sequence_len++;
         }
 
