@@ -106,7 +106,13 @@ void success_pattern(uint16_t len)
     TCB0.CTRLA = TCB_ENABLE_bm; // Enable timer
     delay_ms(get_duration());
 
-    // TODO: Display len on display
+    uint8_t digit1 = 11;
+    if (len > 9)
+        digit1 = len % 100 / 10;
+    uint8_t digit2 = len % 10;
+
+    set_digits(digit1, digit2);
+    delay_ms(get_duration());
 
     TCB0.CTRLA = 0; // Disable timer
 }
@@ -117,7 +123,13 @@ void fail_pattern(uint16_t len)
     TCB0.CTRLA = TCB_ENABLE_bm; // Enable timer
     delay_ms(get_duration());
 
-    // TODO: Display len on display
+    uint8_t digit1 = 11;
+    if (len > 9)
+        digit1 = len % 100 / 10;
+    uint8_t digit2 = len % 10;
+
+    set_digits(digit1, digit2);
+    delay_ms(get_duration());
 
     TCB0.CTRLA = 0; // Disable timer
 }
