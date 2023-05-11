@@ -9,6 +9,21 @@ void uart_init(void)
     USART0.CTRLB = USART_RXEN_bm | USART_TXEN_bm; // Enable Tx/Rx
 }
 
+uint8_t uart_getc(void) {
+    while (!(USART0.STATUS & USART_RXCIF_bm));  // Wait for data
+    return USART0.RXDATAL;
+}
+
+void uart_gets(char *string)
+{
+    char c;
+    while ((c = uart_getc()) != '\r')
+    {
+        *string++ = c;
+    }
+    *string = '\0';
+}
+
 void uart_putc(uint8_t c)
 {
     while (!(USART0.STATUS & USART_DREIF_bm))
