@@ -5,6 +5,7 @@
 
 #include "display.h"
 #include "timer.h"
+#include "uart.h"
 
 uint32_t student_number = 0x12345678; // ! Change to actual student number for final
 
@@ -51,10 +52,7 @@ void display_sequence(uint16_t len)
         spi_write(0xFF); // Clear display
         // Stop sound
         delay_ms(duration / 2);
-
-        printf("%d ", step);
     }
-    printf("\n");
 }
 
 uint8_t perform_sequence(uint16_t len)
@@ -63,7 +61,6 @@ uint8_t perform_sequence(uint16_t len)
     for (uint16_t i = 0; i < len; i++)
     {
         uint8_t step = generate_step(&state);
-        printf("step: %d ", step);
 
         int8_t button = -1;
         while (button == -1)
@@ -81,8 +78,6 @@ uint8_t perform_sequence(uint16_t len)
         while (!(VPORTA.IN & pins[button]))
             ;
 
-        printf("%d\n", button);
-
         spi_write(btn_segs[button]); // Show step on display
         // Play sound
         delay_ms(get_duration()); // TODO: Either duration or length of button press
@@ -96,12 +91,13 @@ uint8_t perform_sequence(uint16_t len)
             return 0;
         }
     }
-    printf("\n");
     return 1;
 }
 
 void success_pattern(uint16_t len)
 {
+    uart_puts("SUCCESS\n");
+
     set_digits(8, 8);
     TCB0.CTRLA = TCB_ENABLE_bm; // Enable timer
     delay_ms(get_duration());
@@ -119,6 +115,8 @@ void success_pattern(uint16_t len)
 
 void fail_pattern(uint16_t len)
 {
+    uart_puts("GAME OVER\n");
+
     set_digits(10, 10);
     TCB0.CTRLA = TCB_ENABLE_bm; // Enable timer
     delay_ms(get_duration());

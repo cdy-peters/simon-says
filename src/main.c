@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <avr/io.h>
-#include <util/delay.h>
 
-#include "qutyserial.h"
 #include "sequence.h"
 #include "display.h"
 #include "timer.h"
+#include "uart.h"
 
 #define MAX_SEQUENCE_LEN 65535
 
@@ -17,33 +16,32 @@ int main(void)
 {
     uint16_t sequence_len = 1;
 
-    serial_init();
+    uart_init();
     adc_init();
     pins_init();
     spi_init();
     timer_init();
 
-    spi_write(0xFF);
+    spi_write(0xFF); // Clear display
 
     while (1)
     {
         display_sequence(sequence_len);
         if (!perform_sequence(sequence_len))
         {
-            printf("Sequence failed\n");
             fail_pattern(sequence_len);
             sequence_len = 1;
         }
         else
         {
-            printf("Sequence success\n");
             success_pattern(sequence_len);
             sequence_len++;
         }
 
         if (sequence_len == (uint32_t)MAX_SEQUENCE_LEN)
         {
-            printf("Sequence length limit reached\n");
+            // ? Does a pattern show here?
+            uart_puts("Sequence length limit reached\n");
             sequence_len = 1;
         }
     }
