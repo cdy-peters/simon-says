@@ -97,6 +97,8 @@ uint8_t perform_sequence(uint16_t len)
 void success_pattern(uint16_t len)
 {
     uart_puts("SUCCESS\n");
+    uart_putd(len);
+    uart_puts("\n");
 
     set_digits(8, 8);
     TCB0.CTRLA = TCB_ENABLE_bm; // Enable timer
@@ -116,6 +118,8 @@ void success_pattern(uint16_t len)
 void fail_pattern(uint16_t len)
 {
     uart_puts("GAME OVER\n");
+    uart_putd(len);
+    uart_puts("\n");
 
     set_digits(10, 10);
     TCB0.CTRLA = TCB_ENABLE_bm; // Enable timer
