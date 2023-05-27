@@ -9,8 +9,6 @@
 
 #define MAX_SEQUENCE_LEN 65535
 
-volatile uint8_t pb_debounced = 0xFF;
-
 void pins_init();
 void adc_init();
 
@@ -69,17 +67,4 @@ void pins_init()
     PORTA.PIN5CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN6CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN7CTRL = PORT_PULLUPEN_bm;
-}
-
-void pb_debounce(void)
-{
-    static uint8_t vcount0 = 0, vcount1 = 0;
-
-    uint8_t pb_sample = PORTA.IN;
-    uint8_t pb_changed = (pb_sample ^ pb_debounced);
-
-    vcount1 = (vcount1 ^ vcount0) & pb_changed;
-    vcount0 = ~vcount0 & pb_changed;
-
-    pb_debounced ^= (vcount0 ^ vcount1);
 }

@@ -23,8 +23,8 @@ typedef enum
 } STATES;
 
 extern volatile uint8_t pb_debounced;
-volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF}; // segs initially off
-uint32_t seed = 0x12345678;           // ! Change to actual student number for final
+volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
+uint32_t seed = 0x12345678; // ! Change to actual student number for final
 
 void delay_ms(uint16_t ms)
 {
@@ -73,6 +73,7 @@ uint8_t perform_sequence(uint16_t len)
         switch (pb_state)
         {
         case WAIT:
+            // TODO: Buzzer
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
 
@@ -90,47 +91,28 @@ uint8_t perform_sequence(uint16_t len)
             segs[0] = SEGS_EF;
 
             if (pb_rising & PIN4_bm)
-            {
-                if (step == 0)
-                    pb_state = SUCCESS;
-                else
-                    pb_state = FAIL;
-            }
+                pb_state = step == 0 ? SUCCESS : FAIL;
 
             break;
         case BTN2:
             segs[0] = SEGS_BC;
 
             if (pb_rising & PIN5_bm)
-            {
-                if (step == 1)
-                    pb_state = SUCCESS;
-                else
-                    pb_state = FAIL;
-            }
+                pb_state = step == 1 ? SUCCESS : FAIL;
 
             break;
         case BTN3:
             segs[1] = SEGS_EF;
 
             if (pb_rising & PIN6_bm)
-            {
-                if (step == 2)
-                    pb_state = SUCCESS;
-                else
-                    pb_state = FAIL;
-            }
+                pb_state = step == 2 ? SUCCESS : FAIL;
+
             break;
         case BTN4:
             segs[1] = SEGS_BC;
 
             if (pb_rising & PIN7_bm)
-            {
-                if (step == 3)
-                    pb_state = SUCCESS;
-                else
-                    pb_state = FAIL;
-            }
+                pb_state = step == 3 ? SUCCESS : FAIL;
 
             break;
         case SUCCESS:
@@ -143,6 +125,7 @@ uint8_t perform_sequence(uint16_t len)
                 segs[0] = SEGS_ON;
                 segs[1] = SEGS_ON;
                 delay_ms(get_duration());
+
                 segs[0] = SEGS_OFF;
                 segs[1] = SEGS_OFF;
 
@@ -156,18 +139,21 @@ uint8_t perform_sequence(uint16_t len)
             break;
         case FAIL:
             delay_ms(get_duration());
+
             // Fail pattern
             segs[0] = SEGS_G;
             segs[1] = SEGS_G;
             delay_ms(get_duration());
+
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
 
-            seed = lfsr_state;
+            seed = lfsr_state; // TODO: Check this
 
             return 0;
         default:
             pb_state = WAIT;
+            break;
         }
     }
 
@@ -185,6 +171,7 @@ void display_sequence(uint16_t len)
         switch (step)
         {
         case 0:
+            // TODO: Buzzer
             segs[0] = SEGS_EF;
             break;
         case 1:
@@ -199,16 +186,13 @@ void display_sequence(uint16_t len)
         default:
             break;
         }
+        
         uint16_t duration = get_duration();
-        // TODO: Play sound
         delay_ms(duration / 2);
 
         segs[0] = SEGS_OFF;
         segs[1] = SEGS_OFF;
-        // TODO: Stop sound
+        // TODO: Turn off buzzer
         delay_ms(duration / 2);
-
-        printf("%d ", step);
     }
-    printf("\n");
 }
