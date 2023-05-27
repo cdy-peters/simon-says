@@ -4,9 +4,12 @@
 
 #include "qutyserial.h"
 #include "sequence.h"
-#include "display.h"
+#include "spi.h"
+#include "timer.h"
 
 #define MAX_SEQUENCE_LEN 65535
+
+volatile uint8_t pb_debounced = 0xFF;
 
 void pins_init();
 void adc_init();
@@ -18,9 +21,10 @@ int main(void)
     serial_init();
     adc_init();
     pins_init();
-    spi_init(); // Initialise SPI
+    spi_init();
+    timer_init();
 
-    spi_write(0xFF); // Clear display
+    get_duration();  // ! First get_duration is always 0, temp solution
 
     while (1)
     {
@@ -65,4 +69,17 @@ void pins_init()
     PORTA.PIN5CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN6CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN7CTRL = PORT_PULLUPEN_bm;
+}
+
+void pb_debounce(void)
+{
+    static uint8_t vcount0 = 0, vcount1 = 0;
+
+    uint8_t pb_sample = PORTA.IN;
+    uint8_t pb_changed = (pb_sample ^ pb_debounced);
+
+    vcount1 = (vcount1 ^ vcount0) & pb_changed;
+    vcount0 = ~vcount0 & pb_changed;
+
+    pb_debounced ^= (vcount0 ^ vcount1);
 }
