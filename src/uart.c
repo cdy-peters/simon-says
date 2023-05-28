@@ -6,6 +6,7 @@
 
 extern volatile STATES state;
 extern volatile uint8_t pb_released;
+extern volatile uint8_t octave;
 
 void uart_init(void)
 {
@@ -84,6 +85,16 @@ ISR(USART0_RXC_vect)
                 state = BTN4;
                 pb_released = 1;
             }
+            break;
+        case ',':
+        case 'k':
+            if (octave < 3)
+                octave++;
+            break;
+        case '.':
+        case 'l':
+            if (octave > -2)
+                octave--;
             break;
         }
     case AWAITING_PAYLOAD:
