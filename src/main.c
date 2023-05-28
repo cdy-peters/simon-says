@@ -11,6 +11,7 @@
 
 void pins_init();
 void adc_init();
+void buzzer_init();
 
 int main(void)
 {
@@ -21,6 +22,7 @@ int main(void)
     pins_init();
     spi_init();
     timer_init();
+    buzzer_init();
 
     get_duration();  // ! First get_duration is always 0, temp solution
 
@@ -67,4 +69,17 @@ void pins_init()
     PORTA.PIN5CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN6CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN7CTRL = PORT_PULLUPEN_bm;
+}
+
+#include "buzzer.h"
+
+void buzzer_init(void) {
+    cli(); 
+
+    PORTB.DIRSET = PIN0_bm;
+
+    TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV1_gc;
+    TCA0.SINGLE.CTRLB = TCA_SINGLE_WGMODE_SINGLESLOPE_gc | TCA_SINGLE_CMP0EN_bm;
+
+    sei();
 }

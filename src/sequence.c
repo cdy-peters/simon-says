@@ -4,6 +4,7 @@
 #include <util/delay.h>
 
 #include "spi.h"
+#include "buzzer.h"
 
 #define SEGS_EF 0b00111110
 #define SEGS_BC 0b01101011
@@ -31,6 +32,7 @@ uint32_t seed = 0x12345678; // ! Change to actual student number for final
 void delay_ms(uint16_t ms);
 uint16_t get_duration();
 uint8_t generate_step(uint32_t *lfsr_state);
+void set_tone_freq(uint16_t freq);
 void display_score(uint16_t len);
 
 void display_sequence(uint16_t len)
@@ -39,33 +41,39 @@ void display_sequence(uint16_t len)
 
     for (uint16_t i = 0; i < len; i++)
     {
+        uint16_t duration = get_duration();
         uint8_t step = generate_step(&lfsr_state);
 
         switch (step)
         {
         case 0:
-            // TODO: Buzzer
+            set_tone_freq(TONE1_FREQ);
             segs[0] = SEGS_EF;
             break;
         case 1:
+            set_tone_freq(TONE2_FREQ);
             segs[0] = SEGS_BC;
             break;
         case 2:
+            set_tone_freq(TONE3_FREQ);
             segs[1] = SEGS_EF;
             break;
         case 3:
+            set_tone_freq(TONE4_FREQ);
             segs[1] = SEGS_BC;
             break;
         default:
             break;
         }
 
-        uint16_t duration = get_duration();
         delay_ms(duration / 2);
+
+        // Turn off buzzer and display
+        TCA0.SINGLE.CTRLA = ~TCA_SINGLE_ENABLE_bm;
 
         segs[0] = SEGS_OFF;
         segs[1] = SEGS_OFF;
-        // TODO: Turn off buzzer
+
         delay_ms(duration / 2);
     }
 }
@@ -94,7 +102,8 @@ uint8_t perform_sequence(uint16_t len)
         switch (pb_state)
         {
         case WAIT:
-            // TODO: Buzzer
+            TCA0.SINGLE.CTRLA = ~TCA_SINGLE_ENABLE_bm;
+
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
 
@@ -109,6 +118,8 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN1:
+            set_tone_freq(TONE1_FREQ);
+
             segs[0] = SEGS_EF;
 
             if (pb_rising & PIN4_bm)
@@ -116,6 +127,8 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN2:
+            set_tone_freq(TONE2_FREQ);
+
             segs[0] = SEGS_BC;
 
             if (pb_rising & PIN5_bm)
@@ -123,6 +136,8 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN3:
+            set_tone_freq(TONE3_FREQ);
+
             segs[1] = SEGS_EF;
 
             if (pb_rising & PIN6_bm)
@@ -130,6 +145,8 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN4:
+            set_tone_freq(TONE4_FREQ);
+
             segs[1] = SEGS_BC;
 
             if (pb_rising & PIN7_bm)
@@ -139,10 +156,13 @@ uint8_t perform_sequence(uint16_t len)
         case SUCCESS:
             delay_ms(get_duration());
 
+            TCA0.SINGLE.CTRLA = ~TCA_SINGLE_ENABLE_bm;
+
             counter++;
             if (counter == len)
             {
                 display_score(len);
+                delay_ms(get_duration());
 
                 // Success pattern
                 segs[0] = SEGS_ON;
@@ -163,7 +183,10 @@ uint8_t perform_sequence(uint16_t len)
         case FAIL:
             delay_ms(get_duration());
 
+            TCA0.SINGLE.CTRLA = ~TCA_SINGLE_ENABLE_bm;
+
             display_score(len);
+            delay_ms(get_duration());
 
             // Fail pattern
             segs[0] = SEGS_G;
@@ -173,7 +196,7 @@ uint8_t perform_sequence(uint16_t len)
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
 
-            seed = lfsr_state; // TODO: Check this
+            seed = lfsr_state; // TODO: Doesn't seem to work
 
             return 0;
         default:
@@ -209,6 +232,13 @@ uint8_t generate_step(uint32_t *lfsr_state)
     return *lfsr_state & 0b11;
 }
 
+void set_tone_freq(uint16_t freq)
+{
+    TCA0.SINGLE.PERBUF = 3333333 / freq;
+    TCA0.SINGLE.CMP0BUF = freq >> 1;
+    TCA0.SINGLE.CTRLA = TCA_SINGLE_ENABLE_bm;
+}
+
 void display_score(uint16_t len)
 {
     // Score
@@ -216,5 +246,4 @@ void display_score(uint16_t len)
     if (len > 9)
         segs[0] = score_segs[len % 100 / 10];
     segs[1] = score_segs[len % 10];
-    delay_ms(get_duration());
 }
