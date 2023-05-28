@@ -24,34 +24,55 @@ typedef enum
 
 extern volatile uint8_t pb_debounced;
 volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
+uint8_t score_segs[] = {
+    0x08, 0x6B, 0x44, 0x41, 0x23, 0x11, 0x10, 0x4B, 0x00, 0x01};
 uint32_t seed = 0x12345678; // ! Change to actual student number for final
 
-void delay_ms(uint16_t ms)
+void delay_ms(uint16_t ms);
+uint16_t get_duration();
+uint8_t generate_step(uint32_t *lfsr_state);
+void display_score(uint16_t len);
+
+void display_sequence(uint16_t len)
 {
-    for (uint16_t i = 0; i < ms; i++)
-        _delay_ms(1);
-}
+    uint32_t lfsr_state = seed;
 
-uint16_t get_duration()
-{
-    uint16_t result = ADC0.RESULT;
-    uint16_t duration = result / 255.0 * 1750 + 250;
-    return duration;
-}
+    for (uint16_t i = 0; i < len; i++)
+    {
+        uint8_t step = generate_step(&lfsr_state);
 
-uint8_t generate_step(uint32_t *lfsr_state)
-{
-    uint8_t bit = *lfsr_state & 1;
-    *lfsr_state >>= 1;
+        switch (step)
+        {
+        case 0:
+            // TODO: Buzzer
+            segs[0] = SEGS_EF;
+            break;
+        case 1:
+            segs[0] = SEGS_BC;
+            break;
+        case 2:
+            segs[1] = SEGS_EF;
+            break;
+        case 3:
+            segs[1] = SEGS_BC;
+            break;
+        default:
+            break;
+        }
 
-    if (bit)
-        *lfsr_state ^= 0xE2023CAB;
+        uint16_t duration = get_duration();
+        delay_ms(duration / 2);
 
-    return *lfsr_state & 0b11;
+        segs[0] = SEGS_OFF;
+        segs[1] = SEGS_OFF;
+        // TODO: Turn off buzzer
+        delay_ms(duration / 2);
+    }
 }
 
 uint8_t perform_sequence(uint16_t len)
 {
+    uint16_t counter = 0;
     uint32_t lfsr_state = seed;
     uint8_t step = generate_step(&lfsr_state);
 
@@ -118,9 +139,11 @@ uint8_t perform_sequence(uint16_t len)
         case SUCCESS:
             delay_ms(get_duration());
 
-            len--;
-            if (len == 0)
+            counter++;
+            if (counter == len)
             {
+                display_score(len);
+
                 // Success pattern
                 segs[0] = SEGS_ON;
                 segs[1] = SEGS_ON;
@@ -139,6 +162,8 @@ uint8_t perform_sequence(uint16_t len)
             break;
         case FAIL:
             delay_ms(get_duration());
+
+            display_score(len);
 
             // Fail pattern
             segs[0] = SEGS_G;
@@ -160,39 +185,36 @@ uint8_t perform_sequence(uint16_t len)
     return 1;
 }
 
-void display_sequence(uint16_t len)
+void delay_ms(uint16_t ms)
 {
-    uint32_t lfsr_state = seed;
+    for (uint16_t i = 0; i < ms; i++)
+        _delay_ms(1);
+}
 
-    for (uint16_t i = 0; i < len; i++)
-    {
-        uint8_t step = generate_step(&lfsr_state);
+uint16_t get_duration()
+{
+    uint16_t result = ADC0.RESULT;
+    uint16_t duration = result / 255.0 * 1750 + 250;
+    return duration;
+}
 
-        switch (step)
-        {
-        case 0:
-            // TODO: Buzzer
-            segs[0] = SEGS_EF;
-            break;
-        case 1:
-            segs[0] = SEGS_BC;
-            break;
-        case 2:
-            segs[1] = SEGS_EF;
-            break;
-        case 3:
-            segs[1] = SEGS_BC;
-            break;
-        default:
-            break;
-        }
-        
-        uint16_t duration = get_duration();
-        delay_ms(duration / 2);
+uint8_t generate_step(uint32_t *lfsr_state)
+{
+    uint8_t bit = *lfsr_state & 1;
+    *lfsr_state >>= 1;
 
-        segs[0] = SEGS_OFF;
-        segs[1] = SEGS_OFF;
-        // TODO: Turn off buzzer
-        delay_ms(duration / 2);
-    }
+    if (bit)
+        *lfsr_state ^= 0xE2023CAB;
+
+    return *lfsr_state & 0b11;
+}
+
+void display_score(uint16_t len)
+{
+    // Score
+    segs[0] = SEGS_OFF;
+    if (len > 9)
+        segs[0] = score_segs[len % 100 / 10];
+    segs[1] = score_segs[len % 10];
+    delay_ms(get_duration());
 }
