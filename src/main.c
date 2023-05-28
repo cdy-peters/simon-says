@@ -5,7 +5,7 @@
 #include "qutyserial.h"
 #include "sequence.h"
 #include "spi.h"
-#include "timer.h"
+#include "timers.h"
 #include "buzzer.h"
 
 #define MAX_SEQUENCE_LEN 65535
@@ -22,9 +22,11 @@ int main(void)
     pins_init();
     adc_init();
     spi_init();
-    timer_init();
+    timers_init();
     buzzer_init();
     sei();
+
+    get_duration(); // ! First call always returns 0
 
     while (1)
     {

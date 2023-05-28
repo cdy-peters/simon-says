@@ -5,6 +5,7 @@
 
 #include "spi.h"
 #include "buzzer.h"
+#include "timers.h"
 
 #define SEGS_EF 0b00111110
 #define SEGS_BC 0b01101011
@@ -23,11 +24,13 @@ typedef enum
     FAIL
 } STATES;
 
+volatile uint8_t pb_released = 0;
 extern volatile uint8_t pb_debounced;
 volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
 uint8_t score_segs[] = {
     0x08, 0x6B, 0x44, 0x41, 0x23, 0x11, 0x10, 0x4B, 0x00, 0x01};
 uint32_t seed = 0x12345678; // ! Change to actual student number for final
+uint16_t duration;
 
 void delay_ms(uint16_t ms);
 uint16_t get_duration();
@@ -40,7 +43,7 @@ void display_sequence(uint16_t len)
 
     for (uint16_t i = 0; i < len; i++)
     {
-        uint16_t duration = get_duration();
+        duration = get_duration();
         uint8_t step = generate_step(&lfsr_state);
 
         switch (step)
@@ -98,9 +101,16 @@ uint8_t perform_sequence(uint16_t len)
         pb_falling = pb_changed & pb_sample_r;
         pb_rising = pb_changed & pb_sample;
 
+        allow_updating_playback_delay = 1;
+        new_playback_time = get_duration();
+
         switch (pb_state)
         {
         case WAIT:
+            pb_released = 0;
+            elapsed_time = 0;
+            allow_updating_playback_delay = 0;
+
             stop_tone();
 
             segs[0] = SEGS_OFF;
@@ -118,55 +128,83 @@ uint8_t perform_sequence(uint16_t len)
             break;
         case BTN1:
             play_tone(TONE1_FREQ);
-
             segs[0] = SEGS_EF;
 
-            if (pb_rising & PIN4_bm)
+            if (!pb_released)
+            {
+                if (pb_rising & PIN4_bm)
+                    pb_released = 1;
+            }
+            else if (elapsed_time >= playback_time)
+            {
+                stop_tone();
+                allow_updating_playback_delay = 1;
                 pb_state = step == 0 ? SUCCESS : FAIL;
+            }
 
             break;
         case BTN2:
             play_tone(TONE2_FREQ);
-
             segs[0] = SEGS_BC;
 
-            if (pb_rising & PIN5_bm)
+            if (!pb_released)
+            {
+                if (pb_rising & PIN5_bm)
+                    pb_released = 1;
+            }
+            else if (elapsed_time >= playback_time)
+            {
+                stop_tone();
+                allow_updating_playback_delay = 1;
                 pb_state = step == 1 ? SUCCESS : FAIL;
+            }
 
             break;
         case BTN3:
             play_tone(TONE3_FREQ);
-
             segs[1] = SEGS_EF;
 
-            if (pb_rising & PIN6_bm)
+            if (!pb_released)
+            {
+                if (pb_rising & PIN6_bm)
+                    pb_released = 1;
+            }
+            else if (elapsed_time >= playback_time)
+            {
+                stop_tone();
+                allow_updating_playback_delay = 1;
                 pb_state = step == 2 ? SUCCESS : FAIL;
+            }
 
             break;
         case BTN4:
             play_tone(TONE4_FREQ);
-
             segs[1] = SEGS_BC;
 
-            if (pb_rising & PIN7_bm)
+            if (!pb_released)
+            {
+                if (pb_rising & PIN7_bm)
+                    pb_released = 1;
+            }
+            else if (elapsed_time >= playback_time)
+            {
+                stop_tone();
+                allow_updating_playback_delay = 1;
                 pb_state = step == 3 ? SUCCESS : FAIL;
+            }
 
             break;
         case SUCCESS:
-            delay_ms(get_duration());
-
-            stop_tone();
-
             counter++;
             if (counter == len)
             {
                 display_score(len);
-                delay_ms(get_duration());
+                delay_ms(playback_time);
 
                 // Success pattern
                 segs[0] = SEGS_ON;
                 segs[1] = SEGS_ON;
-                delay_ms(get_duration());
+                delay_ms(playback_time);
 
                 segs[0] = SEGS_OFF;
                 segs[1] = SEGS_OFF;
@@ -180,17 +218,13 @@ uint8_t perform_sequence(uint16_t len)
             }
             break;
         case FAIL:
-            delay_ms(get_duration());
-
-            stop_tone();
-
             display_score(len);
-            delay_ms(get_duration());
+            delay_ms(playback_time);
 
             // Fail pattern
             segs[0] = SEGS_G;
             segs[1] = SEGS_G;
-            delay_ms(get_duration());
+            delay_ms(playback_time);
 
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
@@ -209,8 +243,9 @@ uint8_t perform_sequence(uint16_t len)
 
 void delay_ms(uint16_t ms)
 {
-    for (uint16_t i = 0; i < ms; i++)
-        _delay_ms(1);
+    elapsed_time = 0;
+    while (elapsed_time < ms)
+        ;
 }
 
 uint16_t get_duration()
