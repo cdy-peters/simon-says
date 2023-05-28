@@ -16,6 +16,7 @@ volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
 uint8_t score_segs[] = {
     0x08, 0x6B, 0x44, 0x41, 0x23, 0x11, 0x10, 0x4B, 0x00, 0x01};
 
+volatile STATES state = WAIT;
 volatile uint8_t pb_released = 0;
 uint16_t duration;
 
@@ -69,11 +70,11 @@ void display_sequence(uint16_t len)
 
 uint8_t perform_sequence(uint16_t len)
 {
+    state = WAIT;
+
     uint16_t counter = 0;
     uint32_t lfsr_state = seed;
     uint8_t step = generate_step(&lfsr_state);
-
-    STATES state = WAIT;
 
     uint8_t pb_sample = 0xFF;
     uint8_t pb_sample_r = 0xFF;
@@ -93,6 +94,9 @@ uint8_t perform_sequence(uint16_t len)
 
         switch (state)
         {
+        case PAUSED:
+            pb_released = 0;
+            break;
         case WAIT:
             pb_released = 0;
             elapsed_time = 0;
@@ -201,6 +205,7 @@ uint8_t perform_sequence(uint16_t len)
                 segs[0] = SEGS_OFF;
                 segs[1] = SEGS_OFF;
 
+                state = PAUSED;
                 return 1;
             }
             else
@@ -232,9 +237,10 @@ uint8_t perform_sequence(uint16_t len)
                 generate_step(&lfsr_state);
             seed = lfsr_state;
 
+            state = PAUSED;
             return 0;
         default:
-            state = WAIT;
+            state = PAUSED;
             break;
         }
     }

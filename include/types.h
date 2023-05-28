@@ -6,6 +6,7 @@
 
 typedef enum
 {
+    PAUSED,
     WAIT,
     BTN1,
     BTN2,
@@ -14,3 +15,9 @@ typedef enum
     SUCCESS,
     FAIL
 } STATES;
+
+typedef enum
+{
+    AWAITING_COMMAND,
+    AWAITING_PAYLOAD
+} SERIAL_STATE;

@@ -7,6 +7,7 @@
 #include "timers.h"
 #include "buzzer.h"
 #include "uart.h"
+#include "types.h"
 
 #define MAX_SEQUENCE_LEN 65535
 
@@ -56,6 +57,9 @@ void pins_init()
 
     // Buzzer
     PORTB.DIRSET = PIN0_bm;
+
+    // USART0 TXD
+    PORTB.DIRSET = PIN2_bm;
 }
 
 void adc_init()

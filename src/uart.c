@@ -1,11 +1,16 @@
 #include <avr/io.h>
-
+#include <avr/interrupt.h>
 #include <stdint.h>
+
+#include "types.h"
+
+extern volatile STATES state;
+extern volatile uint8_t pb_released;
 
 void uart_init(void)
 {
-    PORTB.DIRSET = PIN2_bm;                       // Enable PB2 as output (USART0 TXD)
-    USART0.BAUD = 1389;                           // 9600 baud @ 3.3 MHz
+    USART0.BAUD = 1389; // 9600 baud @ 3.3 MHz
+    USART0.CTRLA = USART_RXCIE_bm;
     USART0.CTRLB = USART_RXEN_bm | USART_TXEN_bm; // Enable Tx/Rx
 }
 
@@ -35,4 +40,55 @@ void uart_putd(uint16_t d)
 
     while (i)
         uart_putc(buf[--i]);
+}
+
+ISR(USART0_RXC_vect)
+{
+    static SERIAL_STATE serial_state = AWAITING_COMMAND;
+
+    uint8_t rx_data = USART0.RXDATAL;
+
+    switch (serial_state)
+    {
+    case AWAITING_COMMAND:
+        switch (rx_data)
+        {
+        case '1':
+        case 'q':
+            if (state == WAIT)
+            {
+                state = BTN1;
+                pb_released = 1;
+            }
+            break;
+        case '2':
+        case 'w':
+            if (state == WAIT)
+            {
+                state = BTN2;
+                pb_released = 1;
+            }
+            break;
+        case '3':
+        case 'e':
+            if (state == WAIT)
+            {
+                state = BTN3;
+                pb_released = 1;
+            }
+            break;
+        case '4':
+        case 'r':
+            if (state == WAIT)
+            {
+                state = BTN4;
+                pb_released = 1;
+            }
+            break;
+        }
+    case AWAITING_PAYLOAD:
+        break;
+    default:
+        break;
+    }
 }
