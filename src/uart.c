@@ -4,9 +4,11 @@
 
 #include "types.h"
 
+extern volatile uint32_t seed;
+extern volatile uint16_t sequence_len;
+extern volatile uint8_t octave;
 extern volatile STATES state;
 extern volatile uint8_t pb_released;
-extern volatile uint8_t octave;
 
 void uart_init(void)
 {
@@ -95,6 +97,12 @@ ISR(USART0_RXC_vect)
         case 'l':
             if (octave > -2)
                 octave--;
+            break;
+        case '0':
+        case 'p':
+            octave = 0;
+            seed = INITIAL_SEED;
+            state = RESET;
             break;
         }
     case AWAITING_PAYLOAD:

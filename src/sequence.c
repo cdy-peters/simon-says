@@ -239,6 +239,14 @@ uint8_t perform_sequence(uint16_t len)
 
             state = PAUSED;
             return 0;
+        case RESET:
+            stop_tone();
+
+            segs[0] = SEGS_OFF;
+            segs[1] = SEGS_OFF;
+
+            state = PAUSED;
+            return 0;
         default:
             state = PAUSED;
             break;

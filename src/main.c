@@ -11,14 +11,15 @@
 
 #define MAX_SEQUENCE_LEN 65535
 
-volatile uint32_t seed = 0x12345678; // ! Change to actual student number for final
+volatile uint32_t seed = INITIAL_SEED;
+volatile uint16_t sequence_len;
 
 void pins_init();
 void adc_init();
 
 int main(void)
 {
-    uint16_t sequence_len = 1;
+    sequence_len = 1;
 
     cli();
     pins_init();

@@ -1,3 +1,5 @@
+#define INITIAL_SEED 0x12345678 // ! Change to student number for final
+
 #define SEGS_EF 0b00111110
 #define SEGS_BC 0b01101011
 #define SEGS_G 0b01110111
@@ -13,7 +15,8 @@ typedef enum
     BTN3,
     BTN4,
     SUCCESS,
-    FAIL
+    FAIL,
+    RESET
 } STATES;
 
 typedef enum
