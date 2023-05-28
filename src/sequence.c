@@ -7,30 +7,16 @@
 #include "buzzer.h"
 #include "timers.h"
 #include "uart.h"
+#include "types.h"
 
-#define SEGS_EF 0b00111110
-#define SEGS_BC 0b01101011
-#define SEGS_G 0b01110111
-#define SEGS_ON 0b00000000
-#define SEGS_OFF 0b01111111
-
-typedef enum
-{
-    WAIT,
-    BTN1,
-    BTN2,
-    BTN3,
-    BTN4,
-    SUCCESS,
-    FAIL
-} STATES;
-
-volatile uint8_t pb_released = 0;
 extern volatile uint8_t pb_debounced;
+extern volatile uint32_t seed;
+
 volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
 uint8_t score_segs[] = {
     0x08, 0x6B, 0x44, 0x41, 0x23, 0x11, 0x10, 0x4B, 0x00, 0x01};
-uint32_t seed = 0x12345678; // ! Change to actual student number for final
+
+volatile uint8_t pb_released = 0;
 uint16_t duration;
 
 void delay_ms(uint16_t ms);
@@ -87,7 +73,7 @@ uint8_t perform_sequence(uint16_t len)
     uint32_t lfsr_state = seed;
     uint8_t step = generate_step(&lfsr_state);
 
-    STATES pb_state = WAIT;
+    STATES state = WAIT;
 
     uint8_t pb_sample = 0xFF;
     uint8_t pb_sample_r = 0xFF;
@@ -105,7 +91,7 @@ uint8_t perform_sequence(uint16_t len)
         allow_updating_playback_delay = 1;
         new_playback_time = get_duration();
 
-        switch (pb_state)
+        switch (state)
         {
         case WAIT:
             pb_released = 0;
@@ -118,13 +104,13 @@ uint8_t perform_sequence(uint16_t len)
             segs[1] = SEGS_OFF;
 
             if (pb_falling & PIN4_bm)
-                pb_state = BTN1;
+                state = BTN1;
             else if (pb_falling & PIN5_bm)
-                pb_state = BTN2;
+                state = BTN2;
             else if (pb_falling & PIN6_bm)
-                pb_state = BTN3;
+                state = BTN3;
             else if (pb_falling & PIN7_bm)
-                pb_state = BTN4;
+                state = BTN4;
 
             break;
         case BTN1:
@@ -140,7 +126,7 @@ uint8_t perform_sequence(uint16_t len)
             {
                 stop_tone();
                 allow_updating_playback_delay = 1;
-                pb_state = step == 0 ? SUCCESS : FAIL;
+                state = step == 0 ? SUCCESS : FAIL;
             }
 
             break;
@@ -157,7 +143,7 @@ uint8_t perform_sequence(uint16_t len)
             {
                 stop_tone();
                 allow_updating_playback_delay = 1;
-                pb_state = step == 1 ? SUCCESS : FAIL;
+                state = step == 1 ? SUCCESS : FAIL;
             }
 
             break;
@@ -174,7 +160,7 @@ uint8_t perform_sequence(uint16_t len)
             {
                 stop_tone();
                 allow_updating_playback_delay = 1;
-                pb_state = step == 2 ? SUCCESS : FAIL;
+                state = step == 2 ? SUCCESS : FAIL;
             }
 
             break;
@@ -191,7 +177,7 @@ uint8_t perform_sequence(uint16_t len)
             {
                 stop_tone();
                 allow_updating_playback_delay = 1;
-                pb_state = step == 3 ? SUCCESS : FAIL;
+                state = step == 3 ? SUCCESS : FAIL;
             }
 
             break;
@@ -220,7 +206,7 @@ uint8_t perform_sequence(uint16_t len)
             else
             {
                 step = generate_step(&lfsr_state);
-                pb_state = WAIT;
+                state = WAIT;
             }
             break;
         case FAIL:
@@ -248,7 +234,7 @@ uint8_t perform_sequence(uint16_t len)
 
             return 0;
         default:
-            pb_state = WAIT;
+            state = WAIT;
             break;
         }
     }
