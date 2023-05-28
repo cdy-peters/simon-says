@@ -6,6 +6,7 @@
 #include "spi.h"
 #include "buzzer.h"
 #include "timers.h"
+#include "uart.h"
 
 #define SEGS_EF 0b00111110
 #define SEGS_BC 0b01101011
@@ -198,6 +199,11 @@ uint8_t perform_sequence(uint16_t len)
             counter++;
             if (counter == len)
             {
+                // UART output
+                uart_puts("SUCCESS\n");
+                uart_putd(len);
+                uart_puts("\n");
+
                 display_score(len);
                 delay_ms(playback_time);
 
@@ -218,6 +224,11 @@ uint8_t perform_sequence(uint16_t len)
             }
             break;
         case FAIL:
+            // UART output
+            uart_puts("GAME OVER\n");
+            uart_putd(len);
+            uart_puts("\n");
+
             display_score(len);
             delay_ms(playback_time);
 
@@ -272,7 +283,6 @@ uint8_t generate_step(uint32_t *lfsr_state)
 
 void display_score(uint16_t len)
 {
-    // Score
     segs[0] = SEGS_OFF;
     if (len > 9)
         segs[0] = score_segs[len % 100 / 10];
