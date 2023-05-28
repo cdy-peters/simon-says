@@ -32,7 +32,6 @@ uint32_t seed = 0x12345678; // ! Change to actual student number for final
 void delay_ms(uint16_t ms);
 uint16_t get_duration();
 uint8_t generate_step(uint32_t *lfsr_state);
-void set_tone_freq(uint16_t freq);
 void display_score(uint16_t len);
 
 void display_sequence(uint16_t len)
@@ -47,19 +46,19 @@ void display_sequence(uint16_t len)
         switch (step)
         {
         case 0:
-            set_tone_freq(TONE1_FREQ);
+            play_tone(TONE1_FREQ);
             segs[0] = SEGS_EF;
             break;
         case 1:
-            set_tone_freq(TONE2_FREQ);
+            play_tone(TONE2_FREQ);
             segs[0] = SEGS_BC;
             break;
         case 2:
-            set_tone_freq(TONE3_FREQ);
+            play_tone(TONE3_FREQ);
             segs[1] = SEGS_EF;
             break;
         case 3:
-            set_tone_freq(TONE4_FREQ);
+            play_tone(TONE4_FREQ);
             segs[1] = SEGS_BC;
             break;
         default:
@@ -69,7 +68,7 @@ void display_sequence(uint16_t len)
         delay_ms(duration / 2);
 
         // Turn off buzzer and display
-        TCA0.SINGLE.CTRLA = ~TCA_SINGLE_ENABLE_bm;
+        stop_tone();
 
         segs[0] = SEGS_OFF;
         segs[1] = SEGS_OFF;
@@ -102,7 +101,7 @@ uint8_t perform_sequence(uint16_t len)
         switch (pb_state)
         {
         case WAIT:
-            TCA0.SINGLE.CTRLA = ~TCA_SINGLE_ENABLE_bm;
+            stop_tone();
 
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
@@ -118,7 +117,7 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN1:
-            set_tone_freq(TONE1_FREQ);
+            play_tone(TONE1_FREQ);
 
             segs[0] = SEGS_EF;
 
@@ -127,7 +126,7 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN2:
-            set_tone_freq(TONE2_FREQ);
+            play_tone(TONE2_FREQ);
 
             segs[0] = SEGS_BC;
 
@@ -136,7 +135,7 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN3:
-            set_tone_freq(TONE3_FREQ);
+            play_tone(TONE3_FREQ);
 
             segs[1] = SEGS_EF;
 
@@ -145,7 +144,7 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN4:
-            set_tone_freq(TONE4_FREQ);
+            play_tone(TONE4_FREQ);
 
             segs[1] = SEGS_BC;
 
@@ -156,7 +155,7 @@ uint8_t perform_sequence(uint16_t len)
         case SUCCESS:
             delay_ms(get_duration());
 
-            TCA0.SINGLE.CTRLA = ~TCA_SINGLE_ENABLE_bm;
+            stop_tone();
 
             counter++;
             if (counter == len)
@@ -183,7 +182,7 @@ uint8_t perform_sequence(uint16_t len)
         case FAIL:
             delay_ms(get_duration());
 
-            TCA0.SINGLE.CTRLA = ~TCA_SINGLE_ENABLE_bm;
+            stop_tone();
 
             display_score(len);
             delay_ms(get_duration());
@@ -230,13 +229,6 @@ uint8_t generate_step(uint32_t *lfsr_state)
         *lfsr_state ^= 0xE2023CAB;
 
     return *lfsr_state & 0b11;
-}
-
-void set_tone_freq(uint16_t freq)
-{
-    TCA0.SINGLE.PERBUF = 3333333 / freq;
-    TCA0.SINGLE.CMP0BUF = freq >> 1;
-    TCA0.SINGLE.CTRLA = TCA_SINGLE_ENABLE_bm;
 }
 
 void display_score(uint16_t len)

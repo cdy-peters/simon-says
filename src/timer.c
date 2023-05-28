@@ -1,22 +1,15 @@
 #include "timer.h"
 #include "spi.h"
 
-extern uint8_t digit1, digit2;
 extern uint8_t segs[];
 
 volatile uint8_t pb_debounced = 0xFF;
 
 void timer_init(void)
 {
-    cli();
-
-    //    TCB0.CTRLA = TCB_CLKSEL_DIV2_gc;    // Configure CLK_PER/2
-    TCB0.CTRLB = TCB_CNTMODE_INT_gc; // Configure TCB0 in periodic interrupt mode
     TCB0.CCMP = 33333;               // Set interval for 10ms (33333 clocks @ 3.3 MHz)
     TCB0.INTCTRL = TCB_CAPT_bm;      // CAPT interrupt enable
     TCB0.CTRLA = TCB_ENABLE_bm;      // Enable
-
-    sei();
 }
 
 void pb_debounce(void)

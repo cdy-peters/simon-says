@@ -7,3 +7,5 @@
 #define TONE4_FREQ 152
 
 void buzzer_init(void);
+void play_tone(uint16_t freq);
+void stop_tone(void);

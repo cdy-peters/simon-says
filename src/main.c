@@ -6,25 +6,25 @@
 #include "sequence.h"
 #include "spi.h"
 #include "timer.h"
+#include "buzzer.h"
 
 #define MAX_SEQUENCE_LEN 65535
 
 void pins_init();
 void adc_init();
-void buzzer_init();
 
 int main(void)
 {
     uint16_t sequence_len = 1;
 
-    serial_init();
-    adc_init();
+    cli();
+    serial_init(); // ! Remove for final
     pins_init();
+    adc_init();
     spi_init();
     timer_init();
     buzzer_init();
-
-    get_duration();  // ! First get_duration is always 0, temp solution
+    sei();
 
     while (1)
     {
@@ -48,6 +48,18 @@ int main(void)
     }
 }
 
+void pins_init()
+{
+    // Buttons
+    PORTA.PIN4CTRL = PORT_PULLUPEN_bm;
+    PORTA.PIN5CTRL = PORT_PULLUPEN_bm;
+    PORTA.PIN6CTRL = PORT_PULLUPEN_bm;
+    PORTA.PIN7CTRL = PORT_PULLUPEN_bm;
+
+    // Buzzer
+    PORTB.DIRSET = PIN0_bm;
+}
+
 void adc_init()
 {
     ADC0.CTRLA = ADC_ENABLE_bm;
@@ -57,29 +69,4 @@ void adc_init()
     ADC0.CTRLF = ADC_FREERUN_bm | ADC_LEFTADJ_bm;
     ADC0.MUXPOS = ADC_MUXPOS_AIN2_gc;
     ADC0.COMMAND = ADC_MODE_SINGLE_8BIT_gc | ADC_START_IMMEDIATE_gc;
-}
-
-void pins_init()
-{
-    // Configure pins as inputs
-    PORTA.DIRCLR = PIN4_bm | PIN5_bm | PIN6_bm | PIN7_bm;
-
-    // Enable pull-up resistors
-    PORTA.PIN4CTRL = PORT_PULLUPEN_bm;
-    PORTA.PIN5CTRL = PORT_PULLUPEN_bm;
-    PORTA.PIN6CTRL = PORT_PULLUPEN_bm;
-    PORTA.PIN7CTRL = PORT_PULLUPEN_bm;
-}
-
-#include "buzzer.h"
-
-void buzzer_init(void) {
-    cli(); 
-
-    PORTB.DIRSET = PIN0_bm;
-
-    TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV1_gc;
-    TCA0.SINGLE.CTRLB = TCA_SINGLE_WGMODE_SINGLESLOPE_gc | TCA_SINGLE_CMP0EN_bm;
-
-    sei();
 }

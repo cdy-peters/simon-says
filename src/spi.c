@@ -3,8 +3,6 @@
 
 void spi_init(void)
 {
-    cli();
-
     PORTMUX.SPIROUTEA = PORTMUX_SPI0_ALT1_gc; // SPI pins on PC0-3
     PORTC.DIR |= (PIN0_bm | PIN2_bm);         // Set SCK (PC0) and MOSI (PC2) as outputs
     PORTB.DIR |= PIN1_bm;                     // Set DISP EN (PB1) as output
@@ -15,8 +13,6 @@ void spi_init(void)
     SPI0.CTRLB = SPI_SSD_bm;     // Mode 0, client select disable, unbuffered
     SPI0.CTRLA |= SPI_ENABLE_bm; // Enable
     SPI0.INTCTRL = SPI_IE_bm;
-
-    sei();
 }
 
 void spi_write(uint8_t b)
