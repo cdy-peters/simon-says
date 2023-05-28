@@ -229,7 +229,11 @@ uint8_t perform_sequence(uint16_t len)
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
 
-            seed = lfsr_state; // TODO: Doesn't seem to work
+            // Reset seed
+            counter++;
+            for (; counter < len; counter++)
+                generate_step(&lfsr_state);
+            seed = lfsr_state;
 
             return 0;
         default:
