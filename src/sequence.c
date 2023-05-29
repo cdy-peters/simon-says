@@ -37,19 +37,19 @@ void display_sequence(uint16_t len)
         switch (step)
         {
         case 0:
-            play_tone(TONE1_FREQ);
+            play_tone(0);
             segs[0] = SEGS_EF;
             break;
         case 1:
-            play_tone(TONE2_FREQ);
+            play_tone(1);
             segs[0] = SEGS_BC;
             break;
         case 2:
-            play_tone(TONE3_FREQ);
+            play_tone(2);
             segs[1] = SEGS_EF;
             break;
         case 3:
-            play_tone(TONE4_FREQ);
+            play_tone(3);
             segs[1] = SEGS_BC;
             break;
         default:
@@ -118,7 +118,7 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN1:
-            play_tone(TONE1_FREQ);
+            play_tone(0);
             segs[0] = SEGS_EF;
 
             if (!pb_released)
@@ -135,7 +135,7 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN2:
-            play_tone(TONE2_FREQ);
+            play_tone(1);
             segs[0] = SEGS_BC;
 
             if (!pb_released)
@@ -152,7 +152,7 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN3:
-            play_tone(TONE3_FREQ);
+            play_tone(2);
             segs[1] = SEGS_EF;
 
             if (!pb_released)
@@ -169,7 +169,7 @@ uint8_t perform_sequence(uint16_t len)
 
             break;
         case BTN4:
-            play_tone(TONE4_FREQ);
+            play_tone(3);
             segs[1] = SEGS_BC;
 
             if (!pb_released)

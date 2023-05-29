@@ -6,6 +6,11 @@
 #define SEGS_ON 0b00000000
 #define SEGS_OFF 0b01111111
 
+#define TONE1 10959
+#define TONE2 13033
+#define TONE3 8210
+#define TONE4 21919
+
 typedef enum
 {
     PAUSED,
