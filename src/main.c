@@ -26,7 +26,7 @@ int main(void)
     adc_init();
     spi_init();
     timers_init();
-    buzzer_init();
+    // buzzer_init();
     uart_init();
     sei();
 

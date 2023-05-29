@@ -190,9 +190,8 @@ uint8_t perform_sequence(uint16_t len)
             if (counter == len)
             {
                 // UART output
-                uart_puts("SUCCESS\n");
-                uart_putd(len);
-                uart_puts("\n");
+                printf("SUCCESS\n");
+                printf("%d\n", len);
 
                 display_score(len);
                 delay_ms(playback_time);
@@ -216,9 +215,8 @@ uint8_t perform_sequence(uint16_t len)
             break;
         case FAIL:
             // UART output
-            uart_puts("GAME OVER\n");
-            uart_putd(len);
-            uart_puts("\n");
+            printf("GAME OVER\n");
+            printf("%d\n", len);
 
             display_score(len);
             delay_ms(playback_time);
