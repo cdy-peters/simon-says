@@ -10,6 +10,7 @@ extern volatile uint16_t sequence_len;
 extern volatile uint8_t octave;
 extern volatile STATES state;
 extern volatile uint8_t pb_released;
+volatile uint32_t temp_seed;
 
 int uart_putc_printf(char c, FILE *stream);
 
@@ -36,9 +37,23 @@ int uart_putc_printf(char c, FILE *stream)
     return 0;
 }
 
+uint8_t hexchar_to_int(char c)
+{
+    if ('0' <= c && c <= '9')
+        return c - '0';
+    else if ('a' <= c && c <= 'f')
+        return 10 + c - 'a';
+    else
+        return 16; // Invalid
+}
+
 ISR(USART0_RXC_vect)
 {
     static SERIAL_STATE serial_state = AWAITING_COMMAND;
+
+    static uint8_t chars_received = 0;
+    static uint16_t payload = 0;
+    static uint8_t payload_valid = 1;
 
     uint8_t rx_data = USART0.RXDATAL;
 
@@ -95,9 +110,35 @@ ISR(USART0_RXC_vect)
             seed = INITIAL_SEED;
             state = RESET;
             break;
+        case '9':
+        case 'o':
+            payload_valid = 1;
+            chars_received = 0;
+            payload = 0;
+            serial_state = AWAITING_PAYLOAD;
+            break;
+        default:
+            break;
         }
-    case AWAITING_PAYLOAD:
         break;
+    case AWAITING_PAYLOAD:
+    {
+        uint8_t parsed_result = hexchar_to_int((char)rx_data);
+        if (parsed_result != 16)
+            payload = (payload << 4) | parsed_result;
+        else
+            payload_valid = 0;
+
+        if (++chars_received == 8)
+        {
+            // ! This updates the seed after a successful sequence
+            // ? Should you only update after the game is over?
+            // ? What about for reset, does INITIAL_SEED need to be updated to the new seed?
+            seed = payload_valid ? payload : seed;
+            serial_state = AWAITING_COMMAND;
+        }
+        break;
+    }
     default:
         break;
     }
