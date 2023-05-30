@@ -8,6 +8,7 @@
 #include "buzzer.h"
 #include "uart.h"
 #include "types.h"
+#include "adc.h"
 
 volatile uint32_t init_seed = INITIAL_SEED;
 volatile uint32_t seed = INITIAL_SEED;
@@ -20,7 +21,6 @@ extern volatile uint8_t chars_received;
 volatile char name[20];
 
 void pins_init();
-void adc_init();
 void update_high_scores(uint16_t score);
 void display_high_scores();
 
@@ -115,17 +115,6 @@ void pins_init()
 
     // USART0 TXD
     PORTB.DIRSET = PIN2_bm;
-}
-
-void adc_init()
-{
-    ADC0.CTRLA = ADC_ENABLE_bm;
-    ADC0.CTRLB = ADC_PRESC_DIV2_gc;
-    ADC0.CTRLC = (4 << ADC_TIMEBASE_gp) | ADC_REFSEL_VDD_gc;
-    ADC0.CTRLE = 64;
-    ADC0.CTRLF = ADC_FREERUN_bm | ADC_LEFTADJ_bm;
-    ADC0.MUXPOS = ADC_MUXPOS_AIN2_gc;
-    ADC0.COMMAND = ADC_MODE_SINGLE_8BIT_gc | ADC_START_IMMEDIATE_gc;
 }
 
 void update_high_scores(uint16_t score)

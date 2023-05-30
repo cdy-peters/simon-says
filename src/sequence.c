@@ -8,6 +8,7 @@
 #include "timers.h"
 #include "uart.h"
 #include "types.h"
+#include "adc.h"
 
 extern volatile uint8_t pb_debounced;
 extern volatile uint32_t seed;
@@ -21,7 +22,6 @@ volatile uint8_t pb_released = 0;
 uint16_t duration;
 
 void delay_ms(uint16_t ms);
-uint16_t get_duration();
 uint8_t generate_step(uint32_t *lfsr_state);
 void display_score(uint16_t len);
 
@@ -259,14 +259,6 @@ void delay_ms(uint16_t ms)
     elapsed_time = 0;
     while (elapsed_time < ms)
         ;
-}
-
-uint16_t get_duration()
-{
-    uint32_t result = ADC0.RESULT;
-    uint32_t duration = ((result * 1750) >> 8) + 250;
-
-    return duration;
 }
 
 uint8_t generate_step(uint32_t *lfsr_state)
