@@ -9,6 +9,7 @@
 #include "uart.h"
 #include "types.h"
 
+volatile uint32_t init_seed = INITIAL_SEED;
 volatile uint32_t seed = INITIAL_SEED;
 volatile uint16_t sequence_len;
 volatile GAME_STATE game_state;
@@ -74,6 +75,8 @@ int main(void)
                 display_high_scores();
                 game_state = DISPLAY;
             }
+
+            seed = init_seed;
 
             break;
         case AWAIT_NAME:

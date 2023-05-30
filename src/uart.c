@@ -6,6 +6,7 @@
 #include "types.h"
 #include "timers.h"
 
+extern volatile uint32_t init_seed;
 extern volatile uint32_t seed;
 extern volatile uint16_t sequence_len;
 
@@ -111,7 +112,7 @@ ISR(USART0_RXC_vect)
         case '0':
         case 'p':
             octave = 0;
-            seed = INITIAL_SEED;
+            seed = init_seed;
             state = RESET;
             break;
         case '9':
@@ -135,10 +136,7 @@ ISR(USART0_RXC_vect)
 
         if (++chars_received == 8)
         {
-            // ! This updates the seed after a successful sequence
-            // ? Should you only update after the game is over?
-            // ? What about for reset, does INITIAL_SEED need to be updated to the new seed?
-            seed = payload_valid ? payload : seed;
+            init_seed = payload_valid ? payload : seed;
             serial_state = AWAITING_COMMAND;
         }
         break;
