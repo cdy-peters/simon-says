@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <avr/io.h>
 
 #include "sequence.h"
@@ -16,6 +15,7 @@ volatile GAME_STATE game_state;
 
 high_score_t high_scores[5];
 extern volatile SERIAL_STATE serial_state;
+extern volatile uint8_t chars_received;
 volatile char name[20];
 
 void pins_init();
@@ -62,7 +62,6 @@ int main(void)
             {
                 if (sequence_len > high_scores[i].score)
                 {
-                    // ! Sometimes an input can't be entered
                     printf("Enter name: \n");
                     serial_state = AWAITING_NAME;
                     game_state = AWAIT_NAME;
@@ -75,12 +74,19 @@ int main(void)
 
             break;
         case AWAIT_NAME:
-            // TODO: 5 second timeout
+            if (elapsed_time > 5000)
+            {
+                serial_state = AWAITING_COMMAND;
+                game_state = SET_NAME;
+            }
             break;
         case SET_NAME:
+            name[chars_received] = '\0';
+
             update_high_scores(sequence_len);
             display_high_scores();
 
+            chars_received = 0;
             sequence_len = 1;
             game_state = DISPLAY;
             break;
@@ -123,16 +129,10 @@ void update_high_scores(uint16_t score)
         if (score > high_scores[i].score)
         {
             for (uint8_t j = 4; j > i; j--)
-            {
                 high_scores[j] = high_scores[j - 1];
-            }
 
-            int name_len = strlen(name) - 1;
-            for (uint8_t j = 0; j < name_len; j++)
-            {
+            for (uint8_t j = 0; j < 20; j++)
                 high_scores[i].name[j] = name[j];
-            }
-
             high_scores[i].score = score;
             break;
         }
@@ -146,7 +146,6 @@ void display_high_scores()
         if (high_scores[i].score == 0)
             break;
 
-        // ! 5th score doesn't print correctly
         printf("%s %d\n", high_scores[i].name, high_scores[i].score);
     }
 }

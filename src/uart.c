@@ -16,6 +16,7 @@ extern volatile uint8_t pb_released;
 
 extern volatile GAME_STATE game_state;
 volatile SERIAL_STATE serial_state = AWAITING_COMMAND;
+volatile uint8_t chars_received = 0;
 extern volatile char name[20];
 
 int uart_putc_printf(char c, FILE *stream);
@@ -55,7 +56,6 @@ uint8_t hexchar_to_int(char c)
 
 ISR(USART0_RXC_vect)
 {
-    static uint8_t chars_received = 0;
     static uint16_t payload = 0;
     static uint8_t payload_valid = 1;
 
@@ -144,11 +144,10 @@ ISR(USART0_RXC_vect)
         break;
     }
     case AWAITING_NAME:
-        if (rx_data == '\n')
+        if (rx_data == '\r')
         {
-            name[chars_received] = '\0';
-            serial_state = AWAITING_COMMAND;
             game_state = SET_NAME;
+            serial_state = AWAITING_COMMAND;
         }
         else
         {
@@ -156,6 +155,7 @@ ISR(USART0_RXC_vect)
             // ? Or should it still wait for 5 seconds and truncate the name?
             name[chars_received] = rx_data;
             chars_received++;
+            elapsed_time = 0;
         }
 
         break;
