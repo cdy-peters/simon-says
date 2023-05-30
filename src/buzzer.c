@@ -14,12 +14,40 @@ void buzzer_init(void)
 
 void play_tone(uint8_t i)
 {
-    uint16_t period = tones[i];
-    TCA0.SINGLE.PERBUF = period >> (octave + 2);
+    TCA0.SINGLE.PERBUF = tones[i];
     TCA0.SINGLE.CMP0BUF = TCA0.SINGLE.PERBUF >> 1;
 }
 
 void stop_tone(void)
 {
     TCA0.SINGLE.CMP0BUF = 0;
+}
+
+void inc_tones(void)
+{
+    if (octave > 3)
+        return;
+
+    for (uint8_t i = 0; i < 4; i++)
+        tones[i] >>= 1;
+    octave++;
+}
+
+void dec_tones(void)
+{
+    if (octave > -2)
+        return;
+
+    for (uint8_t i = 0; i < 4; i++)
+        tones[i] <<= 1;
+    octave--;
+}
+
+void reset_tones(void)
+{
+    tones[0] = TONE1;
+    tones[1] = TONE2;
+    tones[2] = TONE3;
+    tones[3] = TONE4;
+    octave = 0;
 }

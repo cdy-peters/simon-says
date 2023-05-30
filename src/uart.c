@@ -5,12 +5,11 @@
 
 #include "types.h"
 #include "timers.h"
+#include "buzzer.h"
 
 extern volatile uint32_t init_seed;
 extern volatile uint32_t seed;
 extern volatile uint16_t sequence_len;
-
-extern volatile uint8_t octave;
 
 extern volatile STATES state;
 extern volatile uint8_t pb_released;
@@ -101,17 +100,15 @@ ISR(USART0_RXC_vect)
             break;
         case ',':
         case 'k':
-            if (octave < 3)
-                octave++;
+            inc_tones();
             break;
         case '.':
         case 'l':
-            if (octave > -2)
-                octave--;
+            dec_tones();
             break;
         case '0':
         case 'p':
-            octave = 0;
+            reset_tones();
             seed = init_seed;
             state = RESET;
             break;
