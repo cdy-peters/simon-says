@@ -56,7 +56,7 @@ void display_sequence(uint16_t len)
             break;
         }
 
-        delay_ms(duration / 2);
+        delay_ms(duration >> 1);
 
         // Turn off buzzer and display
         stop_tone();
@@ -64,7 +64,7 @@ void display_sequence(uint16_t len)
         segs[0] = SEGS_OFF;
         segs[1] = SEGS_OFF;
 
-        delay_ms(duration / 2);
+        delay_ms(duration >> 1);
     }
 }
 
@@ -263,8 +263,9 @@ void delay_ms(uint16_t ms)
 
 uint16_t get_duration()
 {
-    uint16_t result = ADC0.RESULT;
-    uint16_t duration = result / 255.0 * 1750 + 250;
+    uint32_t result = ADC0.RESULT;
+    uint32_t duration = ((result * 1750) >> 8) + 250;
+
     return duration;
 }
 
