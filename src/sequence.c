@@ -10,8 +10,10 @@
 #include "types.h"
 #include "adc.h"
 
+extern volatile uint16_t sequence_len;
 extern volatile uint8_t pb_debounced;
 extern volatile uint32_t seed;
+extern volatile GAME_STATE game_state;
 
 volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
 uint8_t score_segs[] = {
@@ -68,7 +70,7 @@ void display_sequence(uint16_t len)
     }
 }
 
-uint8_t perform_sequence(uint16_t len)
+void perform_sequence(uint16_t len)
 {
     state = WAIT;
 
@@ -204,8 +206,10 @@ uint8_t perform_sequence(uint16_t len)
                 segs[0] = SEGS_OFF;
                 segs[1] = SEGS_OFF;
 
+                sequence_len++;
                 state = PAUSED;
-                return 1;
+                game_state = DISPLAY;
+                return;
             }
             else
             {
@@ -236,22 +240,24 @@ uint8_t perform_sequence(uint16_t len)
             seed = lfsr_state;
 
             state = PAUSED;
-            return 0;
+            game_state = GAMEOVER;
+            return;
         case RESET:
             stop_tone();
+            reset_tones();
 
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
 
+            sequence_len = 1;
             state = PAUSED;
-            return 0;
+            game_state = DISPLAY;
+            return;
         default:
             state = PAUSED;
             break;
         }
     }
-
-    return 1;
 }
 
 uint8_t generate_step(uint32_t *lfsr_state)

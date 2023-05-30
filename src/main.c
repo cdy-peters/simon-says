@@ -50,13 +50,7 @@ int main(void)
             game_state = PERFORM;
             break;
         case PERFORM:
-            if (!perform_sequence(sequence_len))
-                game_state = GAMEOVER;
-            else
-            {
-                sequence_len++;
-                game_state = DISPLAY;
-            }
+            perform_sequence(sequence_len);
             break;
         case GAMEOVER:
             for (uint8_t i = 0; i < 5; i++)
