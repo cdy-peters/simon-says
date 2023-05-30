@@ -70,7 +70,10 @@ int main(void)
             }
 
             if (game_state != AWAIT_NAME)
+            {
+                display_high_scores();
                 game_state = DISPLAY;
+            }
 
             break;
         case AWAIT_NAME:
