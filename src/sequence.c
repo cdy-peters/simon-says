@@ -254,13 +254,6 @@ uint8_t perform_sequence(uint16_t len)
     return 1;
 }
 
-void delay_ms(uint16_t ms)
-{
-    elapsed_time = 0;
-    while (elapsed_time < ms)
-        ;
-}
-
 uint8_t generate_step(uint32_t *lfsr_state)
 {
     uint8_t bit = *lfsr_state & 1;

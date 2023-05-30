@@ -64,3 +64,10 @@ ISR(TCB1_INT_vect)
 
     TCB1.INTFLAGS = TCB_CAPT_bm;
 }
+
+void delay_ms(uint16_t ms)
+{
+    elapsed_time = 0;
+    while (elapsed_time < ms)
+        ;
+}

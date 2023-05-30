@@ -7,3 +7,4 @@ extern volatile uint16_t new_playback_time;
 extern volatile uint8_t allow_updating_playback_delay;
 
 void timers_init(void);
+void delay_ms(uint16_t ms);
