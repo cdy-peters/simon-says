@@ -35,7 +35,7 @@ void inc_tones(void)
 
 void dec_tones(void)
 {
-    if (octave > -2)
+    if (octave < -2)
         return;
 
     for (uint8_t i = 0; i < 4; i++)
