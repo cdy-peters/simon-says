@@ -4,13 +4,19 @@
 #include <stdio.h>
 
 #include "types.h"
+#include "timers.h"
 
 extern volatile uint32_t seed;
 extern volatile uint16_t sequence_len;
+
 extern volatile uint8_t octave;
+
 extern volatile STATES state;
 extern volatile uint8_t pb_released;
-volatile uint32_t temp_seed;
+
+extern volatile GAME_STATE game_state;
+volatile SERIAL_STATE serial_state = AWAITING_COMMAND;
+extern volatile char name[20];
 
 int uart_putc_printf(char c, FILE *stream);
 
@@ -49,8 +55,6 @@ uint8_t hexchar_to_int(char c)
 
 ISR(USART0_RXC_vect)
 {
-    static SERIAL_STATE serial_state = AWAITING_COMMAND;
-
     static uint8_t chars_received = 0;
     static uint16_t payload = 0;
     static uint8_t payload_valid = 1;
@@ -139,6 +143,22 @@ ISR(USART0_RXC_vect)
         }
         break;
     }
+    case AWAITING_NAME:
+        if (rx_data == '\n')
+        {
+            name[chars_received] = '\0';
+            serial_state = AWAITING_COMMAND;
+            game_state = SET_NAME;
+        }
+        else
+        {
+            // ? if chars_received = 20, should state be updated?
+            // ? Or should it still wait for 5 seconds and truncate the name?
+            name[chars_received] = rx_data;
+            chars_received++;
+        }
+
+        break;
     default:
         break;
     }
