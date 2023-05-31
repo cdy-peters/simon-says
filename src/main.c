@@ -57,7 +57,7 @@ int main(void)
             {
                 if (sequence_len > high_scores[i].score)
                 {
-                    printf("Enter name: \n");
+                    printf("Enter name: ");
                     serial_state = AWAITING_NAME;
                     game_state = AWAIT_NAME;
                     break;

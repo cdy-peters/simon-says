@@ -139,7 +139,7 @@ ISR(USART0_RXC_vect)
         break;
     }
     case AWAITING_NAME:
-        if (rx_data == '\r')
+        if (rx_data == '\n' || rx_data == '\r')
         {
             game_state = SET_NAME;
             serial_state = AWAITING_COMMAND;
