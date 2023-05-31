@@ -7,7 +7,7 @@
 #include "timers.h"
 #include "buzzer.h"
 
-extern volatile uint32_t init_seed;
+extern volatile uint32_t temp_seed;
 extern volatile uint32_t seed;
 extern volatile uint16_t sequence_len;
 
@@ -108,8 +108,8 @@ ISR(USART0_RXC_vect)
             break;
         case '0':
         case 'p':
-            reset_tones();
-            seed = init_seed;
+            if (temp_seed)
+                seed = temp_seed;
             state = RESET;
             break;
         case '9':
@@ -133,7 +133,9 @@ ISR(USART0_RXC_vect)
 
         if (++chars_received == 8)
         {
-            init_seed = payload_valid ? payload : seed;
+            if (payload_valid)
+                temp_seed = payload;
+
             serial_state = AWAITING_COMMAND;
         }
         break;

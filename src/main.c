@@ -10,8 +10,8 @@
 #include "types.h"
 #include "adc.h"
 
-volatile uint32_t init_seed = INITIAL_SEED;
 volatile uint32_t seed = INITIAL_SEED;
+volatile uint32_t temp_seed;
 volatile uint16_t sequence_len;
 volatile GAME_STATE game_state;
 
@@ -70,7 +70,11 @@ int main(void)
                 game_state = DISPLAY;
             }
 
-            seed = init_seed;
+            if (temp_seed)
+            {
+                seed = temp_seed;
+                temp_seed = 0;
+            }
 
             break;
         case AWAIT_NAME:
