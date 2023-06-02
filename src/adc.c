@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <stdint.h>
+#include <types.h>
 
 void adc_init(void)
 {
@@ -14,8 +15,8 @@ void adc_init(void)
 
 uint16_t get_duration(void)
 {
-    uint32_t result = ADC0.RESULT;
-    uint32_t duration = ((result * 1750) >> 8) + 250;
+    uint16_t result = ADC0.RESULT;
+    uint16_t duration = (result * ADC_MULTI) + ((int)(result * ADC_MULTI) >> 8) + 250;
 
     return duration;
 }

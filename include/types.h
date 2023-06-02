@@ -1,5 +1,6 @@
 #define INITIAL_SEED 0x12345678 // ! Change to student number for final
 #define MAX_SEQUENCE_LEN 65535
+#define ADC_MULTI 6.8359375
 
 #define SEGS_EF 0b00111110
 #define SEGS_BC 0b01101011
