@@ -195,12 +195,13 @@ void perform_sequence(uint16_t len)
                 printf("SUCCESS\n");
                 printf("%d\n", len);
 
-                display_score(len);
-                delay_ms(playback_time);
-
                 // Success pattern
                 segs[0] = SEGS_ON;
                 segs[1] = SEGS_ON;
+                delay_ms(playback_time);
+
+                // Score
+                display_score(len);
                 delay_ms(playback_time);
 
                 segs[0] = SEGS_OFF;
@@ -222,12 +223,13 @@ void perform_sequence(uint16_t len)
             printf("GAME OVER\n");
             printf("%d\n", len);
 
-            display_score(len);
-            delay_ms(playback_time);
-
             // Fail pattern
             segs[0] = SEGS_G;
             segs[1] = SEGS_G;
+            delay_ms(playback_time);
+
+            // Score
+            display_score(len);
             delay_ms(playback_time);
 
             segs[0] = SEGS_OFF;
