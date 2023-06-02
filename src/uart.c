@@ -136,6 +136,7 @@ ISR(USART0_RXC_vect)
             if (payload_valid)
                 temp_seed = payload;
 
+            chars_received = 0;
             serial_state = AWAITING_COMMAND;
         }
         break;
