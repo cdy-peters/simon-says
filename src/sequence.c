@@ -202,10 +202,11 @@ void perform_sequence(uint16_t len)
 
                 // Score
                 display_score(len);
-                delay_ms(playback_time);
+                delay_ms(playback_time / 2);
 
                 segs[0] = SEGS_OFF;
                 segs[1] = SEGS_OFF;
+                delay_ms(playback_time / 2);
 
                 sequence_len++;
                 state = PAUSED;
@@ -230,10 +231,11 @@ void perform_sequence(uint16_t len)
 
             // Score
             display_score(len);
-            delay_ms(playback_time);
+            delay_ms(playback_time / 2);
 
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
+            delay_ms(playback_time / 2);
 
             // Reset seed
             counter++;
