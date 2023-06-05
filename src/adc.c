@@ -14,7 +14,7 @@ void adc_init(void)
 uint16_t get_duration(void)
 {
     uint16_t result = ADC0.RESULT;
-    uint16_t duration = (result * ADC_MULTI) + ((int)(result * ADC_MULTI) >> 8) + 250;
+    uint16_t duration = (result * ADC_MULTI) + ((uint16_t)(result * ADC_MULTI) >> 8) + 250;
 
     return duration;
 }

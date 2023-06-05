@@ -273,8 +273,8 @@ void display_score(uint16_t len)
 {
     if (len > 9)
     {
-        int dividend = len % 100;
-        int quotient = 0;
+        uint8_t dividend = len % 100;
+        uint8_t quotient = 0;
         
         while (dividend > 9)
         {

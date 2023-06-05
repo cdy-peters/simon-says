@@ -9,8 +9,8 @@
 
 volatile uint32_t seed = INITIAL_SEED;
 volatile uint32_t temp_seed;
-volatile uint16_t sequence_len;
-volatile GAME_STATE game_state;
+volatile uint16_t sequence_len = 1;
+volatile GAME_STATE game_state = DISPLAY;
 
 high_score_t high_scores[5];
 extern volatile SERIAL_STATE serial_state;
@@ -23,10 +23,6 @@ void display_high_scores();
 
 int main(void)
 {
-    game_state = DISPLAY;
-
-    sequence_len = 1;
-
     cli();
     pins_init();
     adc_init();
