@@ -6,10 +6,8 @@
 extern volatile uint32_t temp_seed;
 extern volatile uint32_t seed;
 
-extern volatile STATES state;
 extern volatile uint8_t pb_released;
 
-extern volatile GAME_STATE game_state;
 volatile SERIAL_STATE serial_state = AWAITING_COMMAND;
 volatile uint8_t chars_received = 0;
 extern volatile char name[20];

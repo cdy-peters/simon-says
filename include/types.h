@@ -47,3 +47,7 @@ typedef enum
     AWAITING_PAYLOAD,
     AWAITING_NAME
 } SERIAL_STATE;
+
+extern volatile GAME_STATE game_state;
+extern volatile STATES state;
+extern volatile SERIAL_STATE serial_state;

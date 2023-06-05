@@ -13,7 +13,6 @@ volatile uint16_t sequence_len = 1;
 volatile GAME_STATE game_state = DISPLAY;
 
 high_score_t high_scores[5];
-extern volatile SERIAL_STATE serial_state;
 extern volatile uint8_t chars_received;
 volatile char name[20];
 

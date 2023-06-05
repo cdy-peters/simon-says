@@ -9,7 +9,6 @@
 extern volatile uint16_t sequence_len;
 extern volatile uint8_t pb_debounced;
 extern volatile uint32_t seed;
-extern volatile GAME_STATE game_state;
 
 volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
 uint8_t score_segs[] = {
