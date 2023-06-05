@@ -1,5 +1,7 @@
 #include "headers.h"
 
+volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
+
 void spi_init(void)
 {
     PORTMUX.SPIROUTEA = PORTMUX_SPI0_ALT1_gc; // SPI pins on PC0-3

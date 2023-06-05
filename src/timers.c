@@ -3,7 +3,6 @@
 #include "spi.h"
 #include "timers.h"
 
-extern uint8_t segs[];
 
 volatile uint8_t pb_debounced = 0xFF;
 volatile uint16_t elapsed_time = 0;

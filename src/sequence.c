@@ -7,10 +7,8 @@
 #include "uart.h"
 
 extern volatile uint16_t sequence_len;
-extern volatile uint8_t pb_debounced;
 extern volatile uint32_t seed;
 
-volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
 uint8_t score_segs[] = {
     0x08, 0x6B, 0x44, 0x41, 0x23, 0x11, 0x10, 0x4B, 0x00, 0x01};
 
