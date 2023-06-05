@@ -277,8 +277,20 @@ uint8_t generate_step(uint32_t *lfsr_state)
 
 void display_score(uint16_t len)
 {
-    segs[0] = SEGS_OFF;
     if (len > 9)
-        segs[0] = score_segs[len % 100 / 10];
+    {
+        int dividend = len % 100;
+        int quotient = 0;
+        
+        while (dividend > 9)
+        {
+            dividend -= 10;
+            quotient++;
+        }
+        segs[0] = score_segs[quotient];
+    } else {
+        segs[0] = SEGS_OFF;
+    }
+    
     segs[1] = score_segs[len % 10];
 }
