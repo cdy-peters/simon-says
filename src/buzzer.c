@@ -1,7 +1,4 @@
-#include <stdint.h>
-#include <avr/io.h>
-
-#include "types.h"
+#include "headers.h"
 
 volatile int8_t octave = 0;
 volatile uint16_t tones[] = {TONE1, TONE2, TONE3, TONE4};

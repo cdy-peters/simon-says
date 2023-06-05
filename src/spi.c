@@ -1,5 +1,4 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
+#include "headers.h"
 
 void spi_init(void)
 {

@@ -1,14 +1,11 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <avr/io.h>
+#include "headers.h"
 
+#include "adc.h"
+#include "buzzer.h"
 #include "sequence.h"
 #include "spi.h"
 #include "timers.h"
-#include "buzzer.h"
 #include "uart.h"
-#include "types.h"
-#include "adc.h"
 
 volatile uint32_t seed = INITIAL_SEED;
 volatile uint32_t temp_seed;
@@ -35,7 +32,7 @@ int main(void)
     adc_init();
     spi_init();
     timers_init();
-    // buzzer_init();
+    buzzer_init();
     uart_init();
     sei();
 

@@ -1,6 +1,4 @@
-#include <avr/io.h>
-#include <stdint.h>
-#include <types.h>
+#include "headers.h"
 
 void adc_init(void)
 {

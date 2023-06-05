@@ -1,15 +1,10 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <stdint.h>
-#include <stdio.h>
+#include "headers.h"
 
-#include "types.h"
-#include "timers.h"
 #include "buzzer.h"
+#include "timers.h"
 
 extern volatile uint32_t temp_seed;
 extern volatile uint32_t seed;
-extern volatile uint16_t sequence_len;
 
 extern volatile STATES state;
 extern volatile uint8_t pb_released;

@@ -1,8 +1,7 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
+#include "headers.h"
 
-#include "timers.h"
 #include "spi.h"
+#include "timers.h"
 
 extern uint8_t segs[];
 

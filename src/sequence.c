@@ -1,14 +1,10 @@
-#include <avr/io.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <util/delay.h>
+#include "headers.h"
 
-#include "spi.h"
+#include "adc.h"
 #include "buzzer.h"
+#include "spi.h"
 #include "timers.h"
 #include "uart.h"
-#include "types.h"
-#include "adc.h"
 
 extern volatile uint16_t sequence_len;
 extern volatile uint8_t pb_debounced;
