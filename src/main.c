@@ -10,7 +10,7 @@
 volatile uint32_t seed = INITIAL_SEED;
 volatile uint32_t temp_seed;
 volatile uint16_t sequence_len = 1;
-volatile GAME_STATE game_state = DISPLAY;
+volatile GAME_STATE game_state = PLAY;
 
 high_score_t high_scores[5];
 volatile char name[20];
@@ -36,11 +36,8 @@ int main(void)
     {
         switch (game_state)
         {
-        case DISPLAY:
+        case PLAY:
             display_sequence(sequence_len);
-            game_state = PERFORM;
-            break;
-        case PERFORM:
             perform_sequence(sequence_len);
             break;
         case GAMEOVER:
@@ -58,7 +55,7 @@ int main(void)
             if (game_state != AWAIT_NAME)
             {
                 display_high_scores();
-                game_state = DISPLAY;
+                game_state = PLAY;
             }
 
             if (temp_seed)
@@ -83,7 +80,7 @@ int main(void)
 
             chars_received = 0;
             sequence_len = 1;
-            game_state = DISPLAY;
+            game_state = PLAY;
             break;
         default:
             break;

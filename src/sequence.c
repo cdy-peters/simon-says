@@ -199,7 +199,7 @@ void perform_sequence(uint16_t len)
 
                 sequence_len++;
                 state = PAUSED;
-                game_state = DISPLAY;
+                game_state = PLAY;
                 return;
             }
             else
@@ -246,7 +246,7 @@ void perform_sequence(uint16_t len)
 
             sequence_len = 1;
             state = PAUSED;
-            game_state = DISPLAY;
+            game_state = PLAY;
             return;
         default:
             state = PAUSED;

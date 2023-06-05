@@ -21,8 +21,7 @@ typedef struct
 
 typedef enum
 {
-    DISPLAY,
-    PERFORM,
+    PLAY,
     GAMEOVER,
     AWAIT_NAME,
     SET_NAME
