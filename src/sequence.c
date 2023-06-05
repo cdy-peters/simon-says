@@ -87,8 +87,7 @@ void perform_sequence(uint16_t len)
         pb_falling = pb_changed & pb_sample_r;
         pb_rising = pb_changed & pb_sample;
 
-        allow_updating_playback_delay = 1;
-        new_playback_time = get_duration();
+        duration = get_duration();
 
         switch (state)
         {
@@ -98,7 +97,6 @@ void perform_sequence(uint16_t len)
         case WAIT:
             pb_released = 0;
             elapsed_time = 0;
-            allow_updating_playback_delay = 0;
 
             stop_tone();
 
@@ -124,10 +122,9 @@ void perform_sequence(uint16_t len)
                 if (pb_rising & PIN4_bm)
                     pb_released = 1;
             }
-            else if (elapsed_time >= playback_time)
+            else if (elapsed_time >= duration)
             {
                 stop_tone();
-                allow_updating_playback_delay = 1;
                 state = step == 0 ? SUCCESS : FAIL;
             }
 
@@ -141,10 +138,9 @@ void perform_sequence(uint16_t len)
                 if (pb_rising & PIN5_bm)
                     pb_released = 1;
             }
-            else if (elapsed_time >= playback_time)
+            else if (elapsed_time >= duration)
             {
                 stop_tone();
-                allow_updating_playback_delay = 1;
                 state = step == 1 ? SUCCESS : FAIL;
             }
 
@@ -158,10 +154,9 @@ void perform_sequence(uint16_t len)
                 if (pb_rising & PIN6_bm)
                     pb_released = 1;
             }
-            else if (elapsed_time >= playback_time)
+            else if (elapsed_time >= duration)
             {
                 stop_tone();
-                allow_updating_playback_delay = 1;
                 state = step == 2 ? SUCCESS : FAIL;
             }
 
@@ -175,10 +170,9 @@ void perform_sequence(uint16_t len)
                 if (pb_rising & PIN7_bm)
                     pb_released = 1;
             }
-            else if (elapsed_time >= playback_time)
+            else if (elapsed_time >= duration)
             {
                 stop_tone();
-                allow_updating_playback_delay = 1;
                 state = step == 3 ? SUCCESS : FAIL;
             }
 
@@ -187,6 +181,8 @@ void perform_sequence(uint16_t len)
             counter++;
             if (counter == len)
             {
+                duration = get_duration();
+
                 // UART output
                 printf("SUCCESS\n");
                 printf("%d\n", len);
@@ -194,15 +190,15 @@ void perform_sequence(uint16_t len)
                 // Success pattern
                 segs[0] = SEGS_ON;
                 segs[1] = SEGS_ON;
-                delay_ms(playback_time);
+                delay_ms(duration);
 
                 // Score
                 display_score(len);
-                delay_ms(playback_time / 2);
+                delay_ms(duration / 2);
 
                 segs[0] = SEGS_OFF;
                 segs[1] = SEGS_OFF;
-                delay_ms(playback_time / 2);
+                delay_ms(duration / 2);
 
                 sequence_len++;
                 state = PAUSED;
@@ -216,6 +212,8 @@ void perform_sequence(uint16_t len)
             }
             break;
         case FAIL:
+            duration = get_duration();
+
             // UART output
             printf("GAME OVER\n");
             printf("%d\n", len);
@@ -223,15 +221,15 @@ void perform_sequence(uint16_t len)
             // Fail pattern
             segs[0] = SEGS_G;
             segs[1] = SEGS_G;
-            delay_ms(playback_time);
+            delay_ms(duration);
 
             // Score
             display_score(len);
-            delay_ms(playback_time / 2);
+            delay_ms(duration / 2);
 
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
-            delay_ms(playback_time / 2);
+            delay_ms(duration / 2);
 
             // Reset seed
             counter++;

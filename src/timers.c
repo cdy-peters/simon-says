@@ -7,9 +7,6 @@ extern uint8_t segs[];
 
 volatile uint8_t pb_debounced = 0xFF;
 volatile uint16_t elapsed_time = 0;
-volatile uint16_t playback_time = 2000;
-volatile uint16_t new_playback_time = 2000;
-volatile uint8_t allow_updating_playback_delay = 0;
 
 void timers_init(void)
 {
@@ -54,12 +51,6 @@ ISR(TCB0_INT_vect)
 ISR(TCB1_INT_vect)
 {
     elapsed_time++;
-
-    if (allow_updating_playback_delay)
-    {
-        playback_time = new_playback_time;
-        allow_updating_playback_delay = 0;
-    }
 
     TCB1.INTFLAGS = TCB_CAPT_bm;
 }
