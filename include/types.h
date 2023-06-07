@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #define INITIAL_SEED 0x12345678 /**< Initial seed for the linear-feedback shift register. */
 #define MAX_SEQUENCE_LEN 65535  /**< Max sequence is a 16 bit unsigned integer */
 #define ADC_MULTI 6.8359375     /**< Multiplier for ADC value, 1750 / 256 */
