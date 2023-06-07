@@ -8,22 +8,16 @@
 volatile uint8_t segs[] = {SEGS_OFF, SEGS_OFF};
 
 /**
- * @brief Initialize the SPI (Serial Peripheral Interface) control registers and pins.
+ * @brief Initialize the SPI (Serial Peripheral Interface) control registers.
  * 
  * The SPI route is set to alternate mode 1.
- * The relevant pins are configured.
  * The SPI host/client operation is set to master mode.
  * The SPI Slave Select Disable (SSD) mode is enabled.
- * SPI is then enabled. along with SPI interrupts.
+ * SPI is then enabled, along with SPI interrupts.
  */
 void spi_init(void)
 {
     PORTMUX.SPIROUTEA = PORTMUX_SPI0_ALT1_gc;
-    PORTC.DIR |= (PIN0_bm | PIN2_bm);
-    PORTB.DIR |= PIN1_bm;
-    PORTB.OUT |= PIN1_bm;
-    PORTA.DIR |= PIN1_bm;
-
     SPI0.CTRLA = SPI_MASTER_bm;
     SPI0.CTRLB = SPI_SSD_bm;
     SPI0.CTRLA |= SPI_ENABLE_bm;

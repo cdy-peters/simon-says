@@ -104,9 +104,13 @@ int main(void)
 /**
  * @brief Initialize the necessary I/O pins.
  * 
- * Buttons via PORTA, pins 4-7 are configured with pull-up enabled.
- * Buzzer via PORTB, pin 0 is configured as an output pin.
- * USART0 TXD via PORTB, pin 2 is configured as an output pin.
+ * Buttons (PA4-7) are configured with pull-up enabled.
+ * Buzzer (PB0) is configured as an output pin.
+ * USART0 TXD (PB2) is configured as an output pin.
+ * SCK (PC0) is configured as an output pin.
+ * MOSI (PC2) is configured as an output pin.
+ * DISP EN (PB1) is configured as an output pin and driven high.
+ * DISP LATCH (PA1) is configured as an output pin.
  */
 void pins_init()
 {
@@ -118,6 +122,11 @@ void pins_init()
     PORTB.DIRSET = PIN0_bm;
 
     PORTB.DIRSET = PIN2_bm;
+
+    PORTC.DIR |= (PIN0_bm | PIN2_bm);
+    PORTB.DIR |= PIN1_bm;
+    PORTB.OUT |= PIN1_bm;
+    PORTA.DIR |= PIN1_bm;
 }
 
 /**
