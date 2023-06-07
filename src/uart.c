@@ -22,11 +22,11 @@ static FILE mystdout = FDEV_SETUP_STREAM(uart_putc_printf, NULL, _FDEV_SETUP_WRI
 
 void uart_init(void)
 {
-    USART0.BAUD = 1389;                           /** Baud rate of 9600 at 3.3MHz */
-    USART0.CTRLA = USART_RXCIE_bm;                /** Enable receive complete interrupt */
-    USART0.CTRLB = USART_RXEN_bm | USART_TXEN_bm; /** Enable receiver and transmitter */
+    USART0.BAUD = 1389;                           /* Baud rate of 9600 at 3.3MHz */
+    USART0.CTRLA = USART_RXCIE_bm;                /* Enable receive complete interrupt */
+    USART0.CTRLB = USART_RXEN_bm | USART_TXEN_bm; /* Enable receiver and transmitter */
 
-    stdout = &mystdout; /** Redirect printf to uart_putc_printf */
+    stdout = &mystdout; /* Redirect printf to uart_putc_printf */
 }
 
 void uart_putc(uint8_t c)

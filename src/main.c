@@ -43,7 +43,7 @@ int main(void)
     uart_init();
     sei();
 
-    get_duration(); // ! First call always returns 0
+    get_duration(); /* First call always returns 0 */
 
     while (1)
     {
@@ -106,7 +106,7 @@ int main(void)
  */
 void pins_init()
 {
-    /** Buttons (PA4-7) are configured with pull-up enabled. */
+    /* Buttons (PA4-7) are configured with pull-up enabled. */
     PORTA.PIN4CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN5CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN6CTRL = PORT_PULLUPEN_bm;

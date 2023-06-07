@@ -22,10 +22,6 @@ volatile STATES state = WAIT;
 volatile uint8_t pb_released = 0;
 uint16_t duration;
 
-void delay_ms(uint16_t ms);
-uint8_t generate_step(uint32_t *lfsr_state);
-void display_score(uint16_t len);
-
 void display_sequence(uint16_t len)
 {
     uint32_t lfsr_state = seed;
@@ -56,15 +52,12 @@ void display_sequence(uint16_t len)
         default:
             break;
         }
-
         delay_ms(duration >> 1);
 
-        // Turn off buzzer and display
+        /* Turn of buzzer and display */
         stop_tone();
-
         segs[0] = SEGS_OFF;
         segs[1] = SEGS_OFF;
-
         delay_ms(duration >> 1);
     }
 }
@@ -186,19 +179,20 @@ void perform_sequence(uint16_t len)
             {
                 duration = get_duration();
 
-                // UART output
+                /* UART output */
                 printf("SUCCESS\n");
                 printf("%d\n", len);
 
-                // Success pattern
+                /* Success pattern */
                 segs[0] = SEGS_ON;
                 segs[1] = SEGS_ON;
                 delay_ms(duration);
 
-                // Score
+                /* Score */
                 display_score(len);
                 delay_ms(duration / 2);
 
+                /* Turn off display */
                 segs[0] = SEGS_OFF;
                 segs[1] = SEGS_OFF;
                 delay_ms(duration / 2);
@@ -217,24 +211,25 @@ void perform_sequence(uint16_t len)
         case FAIL:
             duration = get_duration();
 
-            // UART output
+            /* UART output */
             printf("GAME OVER\n");
             printf("%d\n", len);
 
-            // Fail pattern
+            /* Fail pattern */
             segs[0] = SEGS_G;
             segs[1] = SEGS_G;
             delay_ms(duration);
 
-            // Score
+            /* Score */
             display_score(len);
             delay_ms(duration / 2);
 
+            /* Turn off display */
             segs[0] = SEGS_OFF;
             segs[1] = SEGS_OFF;
             delay_ms(duration / 2);
 
-            // Reset seed
+            /* Update seed */
             counter++;
             for (; counter < len; counter++)
                 generate_step(&lfsr_state);
