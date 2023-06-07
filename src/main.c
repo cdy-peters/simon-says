@@ -1,3 +1,8 @@
+/**
+ * @file main.c
+ * @brief Main program file.
+ */
+
 #include "headers.h"
 
 #include "adc.h"
@@ -19,6 +24,14 @@ void pins_init();
 void update_high_scores(uint16_t score);
 void display_high_scores();
 
+/**
+ * @brief The main function of the program.
+ * 
+ * This is the entry point of the program. It initializes the necessary components,
+ * enters the main execution loop, and handles the game state transitions and logic.
+ *
+ * @return The exit status of the program.
+ */
 int main(void)
 {
     cli();
@@ -88,21 +101,30 @@ int main(void)
     }
 }
 
+/**
+ * @brief Initialize the necessary I/O pins.
+ * 
+ * Buttons via PORTA, pins 4-7 are configured with pull-up enabled.
+ * Buzzer via PORTB, pin 0 is configured as an output pin.
+ * USART0 TXD via PORTB, pin 2 is configured as an output pin.
+ */
 void pins_init()
 {
-    // Buttons
     PORTA.PIN4CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN5CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN6CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN7CTRL = PORT_PULLUPEN_bm;
 
-    // Buzzer
     PORTB.DIRSET = PIN0_bm;
 
-    // USART0 TXD
     PORTB.DIRSET = PIN2_bm;
 }
 
+/**
+ * @brief Update the high scores with a new score.
+ *
+ * @param score: The new score to be inserted into the high scores.
+ */
 void update_high_scores(uint16_t score)
 {
     for (uint8_t i = 0; i < 5; i++)
@@ -120,6 +142,9 @@ void update_high_scores(uint16_t score)
     }
 }
 
+/**
+ * @brief Display the high scores.
+ */
 void display_high_scores()
 {
     for (uint8_t i = 0; i < 5; i++)
