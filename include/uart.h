@@ -5,12 +5,9 @@ extern volatile uint8_t chars_received;
 
 /**
  * @brief Initialize the UART module for serial communication.
- * 
- * This function sets the baud rate value, enables the receive complete interrupt, and enables the transmitter and receiver.
- * It also redirects the standard output stream (`stdout`) to the UART, allowing printf and
- * other standard output functions to use the UART for output. The function does not return any value.
  *
- * @note Baud rate is 1389, which corresponds to 9600 baud at 3.3 MHz.
+ * @note This function also redirects the standard output stream (`stdout`) to the UART, allowing printf and
+ * other standard output functions to use the UART for output.
  */
 void uart_init(void);
 
@@ -28,7 +25,7 @@ void uart_putc(uint8_t c);
 
 /**
  * @brief Helper function for printf to transmit a character over UART.
- * 
+ *
  * This function is used as a callback by the printf function to transmit a single character (`c`) over the UART.
  * It calls the `uart_putc` function to perform the actual transmission.
  *
@@ -40,7 +37,7 @@ int uart_putc_printf(char c, FILE *stream);
 
 /**
  * @brief Converts a hexadecimal character to its integer value.
- * 
+ *
  * @param c: The hexadecimal character to be converted.
  * @return The integer value of the hexadecimal character or 16 if the character is invalid.
  */

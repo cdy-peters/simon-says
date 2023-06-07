@@ -14,13 +14,11 @@ volatile uint16_t elapsed_time = 0;
 
 void timers_init(void)
 {
-    // Push button handler
-    TCB0.CCMP = 33333;          // Set interval for 10ms (33333 clocks @ 3.3 MHz)
-    TCB0.INTCTRL = TCB_CAPT_bm; // CAPT interrupt enable
-    TCB0.CTRLA = TCB_ENABLE_bm; // Enable
+    TCB0.CCMP = 33333; /**< Set interval for 10ms (33333 clocks @ 3.3Mhz) */
+    TCB0.INTCTRL = TCB_CAPT_bm;
+    TCB0.CTRLA = TCB_ENABLE_bm;
 
-    // Generic Timer
-    TCB1.CCMP = 3333; // Set interval for 1ms (3333 clocks @ 3.3 MHz)
+    TCB1.CCMP = 3333; /**< Set interval for 1ms (3333 clocks @ 3.3Mhz) */
     TCB1.INTCTRL = TCB_CAPT_bm;
     TCB1.CTRLA = TCB_ENABLE_bm;
 }
@@ -40,12 +38,9 @@ void pb_debounce(void)
 
 /**
  * @brief TCB0 interrupt service routine for push button.
- * 
- * This ISR (Interrupt Service Routine) is triggered when an interrupt occurs on the TCB0 interface,
- * which is responsible for handling the push button. Within the ISR, it calls the `pb_debounce` function
- * to debounce the push button input. It also toggles the `digit` variable to alternate between displaying
- * two different segments on the SPI bus using the `spi_write` function. Afterward, it acknowledges the TCB0
- * interrupt by clearing the interrupt flag in the TCB0 interrupt flags register (INTFLAGS).
+ *
+ * This ISR is triggered every 10 milliseconds. It calls the `pb_debounce` function to debounce the push button input
+ * and also toggles the `digit` variable to alternate between displaying to the two digits on the display.
  */
 ISR(TCB0_INT_vect)
 {
@@ -63,11 +58,8 @@ ISR(TCB0_INT_vect)
 
 /**
  * @brief TCB1 interrupt service routine for the generic timer.
- * 
- * This ISR (Interrupt Service Routine) is triggered when an interrupt occurs on the TCB1 interface,
- * which is responsible for the timer functionality. Within the ISR, it increments the `elapsed_time`
- * variable to track the elapsed time in milliseconds. Afterward, it acknowledges the TCB1 interrupt by clearing the
- * interrupt flag in the TCB1 interrupt flags register (INTFLAGS).
+ *
+ * This ISR is triggered every millisecond, incrementing the `elapsed_time` variable to track the elapsed time in milliseconds.
  */
 ISR(TCB1_INT_vect)
 {

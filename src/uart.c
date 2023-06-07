@@ -22,17 +22,17 @@ static FILE mystdout = FDEV_SETUP_STREAM(uart_putc_printf, NULL, _FDEV_SETUP_WRI
 
 void uart_init(void)
 {
-    USART0.BAUD = 1389;
-    USART0.CTRLA = USART_RXCIE_bm;
-    USART0.CTRLB = USART_RXEN_bm | USART_TXEN_bm;
+    USART0.BAUD = 1389;                           /** Baud rate of 9600 at 3.3MHz */
+    USART0.CTRLA = USART_RXCIE_bm;                /** Enable receive complete interrupt */
+    USART0.CTRLB = USART_RXEN_bm | USART_TXEN_bm; /** Enable receiver and transmitter */
 
-    stdout = &mystdout;
+    stdout = &mystdout; /** Redirect printf to uart_putc_printf */
 }
 
 void uart_putc(uint8_t c)
 {
     while (!(USART0.STATUS & USART_DREIF_bm))
-        ; // Wait for TXDATA empty
+        ;
     USART0.TXDATAL = c;
 }
 
@@ -54,12 +54,12 @@ uint8_t hexchar_to_int(char c)
 
 /**
  * @brief USART0 receive complete interrupt service routine.
- * 
+ *
  * This ISR handles incoming data received by USART0. It processes the received data
  * based on the current serial state and performs corresponding actions or updates
  * the state variables.
  *
- * @note                    Make sure to enable the USART0 receive complete interrupt to trigger this ISR.
+ * @note Make sure to enable the USART0 receive complete interrupt to trigger this ISR.
  */
 ISR(USART0_RXC_vect)
 {
@@ -156,8 +156,6 @@ ISR(USART0_RXC_vect)
         }
         else
         {
-            // ? if chars_received = 20, should state be updated?
-            // ? Or should it still wait for 5 seconds and truncate the name?
             name[chars_received] = rx_data;
             chars_received++;
             elapsed_time = 0;

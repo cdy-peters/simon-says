@@ -26,7 +26,7 @@ void display_high_scores();
 
 /**
  * @brief The main function of the program.
- * 
+ *
  * This is the entry point of the program. It initializes the necessary components,
  * enters the main execution loop, and handles the game state transitions and logic.
  *
@@ -103,30 +103,23 @@ int main(void)
 
 /**
  * @brief Initialize the necessary I/O pins.
- * 
- * Buttons (PA4-7) are configured with pull-up enabled.
- * Buzzer (PB0) is configured as an output pin.
- * USART0 TXD (PB2) is configured as an output pin.
- * SCK (PC0) is configured as an output pin.
- * MOSI (PC2) is configured as an output pin.
- * DISP EN (PB1) is configured as an output pin and driven high.
- * DISP LATCH (PA1) is configured as an output pin.
  */
 void pins_init()
 {
+    /** Buttons (PA4-7) are configured with pull-up enabled. */
     PORTA.PIN4CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN5CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN6CTRL = PORT_PULLUPEN_bm;
     PORTA.PIN7CTRL = PORT_PULLUPEN_bm;
 
-    PORTB.DIRSET = PIN0_bm;
+    PORTB.DIRSET = PIN0_bm; /**< Buzzer (PB0) is configured as an output pin. */
 
-    PORTB.DIRSET = PIN2_bm;
+    PORTB.DIRSET = PIN2_bm; /**< USART0 TXD (PB2) is configured as an output pin. */
 
-    PORTC.DIR |= (PIN0_bm | PIN2_bm);
-    PORTB.DIR |= PIN1_bm;
-    PORTB.OUT |= PIN1_bm;
-    PORTA.DIR |= PIN1_bm;
+    PORTC.DIR |= (PIN0_bm | PIN2_bm); /**< SCK (PC0) and MOSI (PC2) are configured as output pins. */
+    PORTB.DIR |= PIN1_bm;             /**< DISP EN (PB1) is configured as an output pin and driven high. */
+    PORTB.OUT |= PIN1_bm;             /**< DISP EN (PB1) is configured as an output pin and driven high. */
+    PORTA.DIR |= PIN1_bm;             /**< DISP LATCH (PA1) is configured as an output pin. */
 }
 
 /**
